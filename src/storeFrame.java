@@ -43,7 +43,6 @@ public class storeFrame extends JFrame {
     public storeFrame(String storeName, int userId) {
 
         this.userId = userId;
-        System.out.println("User ID: " + userId);
         this.setTitle(storeName + " Menu");
         this.setLocationRelativeTo(null);
 

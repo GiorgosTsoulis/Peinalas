@@ -139,7 +139,6 @@ public class LoginFrame extends JFrame {
 
                 // Pass userId to the next frame
                 showWelcomeFrame(role, userId);
-                System.out.println("User ID: " + userId);
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(null, "Invalid username or password.");
@@ -152,7 +151,6 @@ public class LoginFrame extends JFrame {
     // Show Welcome Frame
     private void showWelcomeFrame(String role, int userId) {
         new WelcomeFrame(role, userId, () -> openDashBoard(role, userId));
-        System.out.println("User ID: " + userId);
     }
 
     // Open respective dashboard based on the role

@@ -28,7 +28,6 @@ public class CustomerDashboardFrame extends DashboardFrame {
     public CustomerDashboardFrame(int userId) {
         super("Customer");
         this.userId = userId;
-        System.out.println("CustomerDashboardFrame initialized with userId: " + this.userId);
 
         this.setLayout(new GridBagLayout());
         gbc = new GridBagConstraints();

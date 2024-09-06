@@ -20,7 +20,6 @@ public class cartFrame extends JFrame {
     public cartFrame(int orderId, int userId) {
         this.orderId = orderId;
         this.userId = userId;
-        System.out.println("User ID: " + userId);
 
         setTitle("My Cart");
         setSize(600, 400);
