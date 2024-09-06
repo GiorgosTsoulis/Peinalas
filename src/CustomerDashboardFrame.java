@@ -277,7 +277,7 @@ public class CustomerDashboardFrame extends DashboardFrame {
                 storeButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        openStoreDetailsFrame(name);
+                        openStoreDetailsFrame(name, userId);
                     }
                 });
 
@@ -314,8 +314,8 @@ public class CustomerDashboardFrame extends DashboardFrame {
     }
 
     // Method to open a new frame with store details
-    public void openStoreDetailsFrame(String storeName) {
-        new storeFrame(storeName);
+    public void openStoreDetailsFrame(String storeName, int userId) {
+        new storeFrame(storeName, userId); // Open store frame with storeName and userId
     }
 
     public void openProfileFrame(int userId) {

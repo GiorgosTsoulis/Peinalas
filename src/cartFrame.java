@@ -15,9 +15,12 @@ public class cartFrame extends JFrame {
     private int orderId;
     private JPanel itemsPanel;
     private JLabel totalAmountLabel;
+    private int userId;
 
-    public cartFrame(int orderId) {
+    public cartFrame(int orderId, int userId) {
         this.orderId = orderId;
+        this.userId = userId;
+        System.out.println("User ID: " + userId);
 
         setTitle("My Cart");
         setSize(600, 400);
@@ -233,12 +236,13 @@ public class cartFrame extends JFrame {
             if (rs.next()) {
                 double price = rs.getDouble("price");
 
-                String insertItemQuery = "INSERT INTO OrderItems(order_id, item_id, quantity, price) "
-                        + "VALUES (?, ?, 1, ?)";
+                String insertItemQuery = "INSERT INTO OrderItems(order_id, item_id, user_id, quantity, price) "
+                        + "VALUES (?, ?, ?, 1, ?)";
                 PreparedStatement insertItemStmt = conn.prepareStatement(insertItemQuery);
                 insertItemStmt.setInt(1, orderId);
                 insertItemStmt.setInt(2, itemId);
-                insertItemStmt.setDouble(3, price);
+                insertItemStmt.setInt(3, userId);
+                insertItemStmt.setDouble(4, price);
                 insertItemStmt.executeUpdate();
 
                 loadOrderItems(); // Refresh the order items display

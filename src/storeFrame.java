@@ -38,9 +38,12 @@ public class storeFrame extends JFrame {
 
     private JPanel menuSearchPanel;
     private JPanel menuDisplayPanel;
+    private int userId;
 
-    public storeFrame(String storeName) {
+    public storeFrame(String storeName, int userId) {
 
+        this.userId = userId;
+        System.out.println("User ID: " + userId);
         this.setTitle(storeName + " Menu");
         this.setLocationRelativeTo(null);
 
@@ -193,7 +196,7 @@ public class storeFrame extends JFrame {
         });
 
         cartBtn.addActionListener(e -> {
-            new cartFrame(this.orderId);
+            new cartFrame(this.orderId, this.userId);
         });
 
         this.addWindowListener(new WindowAdapter() {
@@ -401,7 +404,7 @@ public class storeFrame extends JFrame {
                 String insertOrderQuery = "INSERT INTO Orders (user_id, store_id, status) VALUES (?, ?, 'In Progress')";
                 PreparedStatement insertOrderStmt = conn.prepareStatement(insertOrderQuery,
                         PreparedStatement.RETURN_GENERATED_KEYS);
-                insertOrderStmt.setInt(1, 1); // Assuming user_id is 1; adjust as necessary
+                insertOrderStmt.setInt(1, userId); // Assuming user_id is 1; adjust as necessary
                 insertOrderStmt.setInt(2, getStoreId(conn)); // Fetch store ID based on the store name
                 insertOrderStmt.executeUpdate();
 
@@ -430,13 +433,14 @@ public class storeFrame extends JFrame {
                 double price = itemRs.getDouble("price");
 
                 // Insert into OrderItems table using the stored orderId
-                String insertItemQuery = "INSERT INTO OrderItems(order_id, item_id, quantity, price) "
-                        + "VALUES (?, ?, ?, ?)";
+                String insertItemQuery = "INSERT INTO OrderItems(order_id, item_id, user_id, quantity, price) "
+                        + "VALUES (?, ?, ?, ?, ?)";
                 PreparedStatement insertItemStmt = conn.prepareStatement(insertItemQuery);
                 insertItemStmt.setInt(1, orderId);
                 insertItemStmt.setInt(2, itemId);
-                insertItemStmt.setInt(3, quantity);
-                insertItemStmt.setDouble(4, price * quantity);
+                insertItemStmt.setInt(3, userId);
+                insertItemStmt.setInt(4, quantity);
+                insertItemStmt.setDouble(5, price * quantity);
 
                 int rowsAffected = insertItemStmt.executeUpdate();
                 if (rowsAffected > 0) {
@@ -501,20 +505,36 @@ public class storeFrame extends JFrame {
                 // Start transaction
                 conn.setAutoCommit(false);
 
-                // Delete OrderItems associated with the orderId
-                String deleteItemsQuery = "DELETE FROM OrderItems WHERE order_id = ?";
-                PreparedStatement deleteItemsStmt = conn.prepareStatement(deleteItemsQuery);
-                deleteItemsStmt.setInt(1, orderId);
-                deleteItemsStmt.executeUpdate();
+                // Check if the order status is "In Progress"
+                String checkStatusQuery = "SELECT status FROM Orders WHERE order_id = ?";
+                PreparedStatement checkStatusStmt = conn.prepareStatement(checkStatusQuery);
+                checkStatusStmt.setInt(1, orderId);
+                ResultSet rs = checkStatusStmt.executeQuery();
 
-                // Delete the order
-                String deleteOrderQuery = "DELETE FROM Orders WHERE order_id = ?";
-                PreparedStatement deleteOrderStmt = conn.prepareStatement(deleteOrderQuery);
-                deleteOrderStmt.setInt(1, orderId);
-                deleteOrderStmt.executeUpdate();
+                if (rs.next()) {
+                    String status = rs.getString("status");
+                    if ("In Progress".equals(status)) {
+                        // Delete OrderItems associated with the orderId
+                        String deleteItemsQuery = "DELETE FROM OrderItems WHERE order_id = ?";
+                        PreparedStatement deleteItemsStmt = conn.prepareStatement(deleteItemsQuery);
+                        deleteItemsStmt.setInt(1, orderId);
+                        deleteItemsStmt.executeUpdate();
 
-                // Commit the transaction
-                conn.commit();
+                        // Delete the order
+                        String deleteOrderQuery = "DELETE FROM Orders WHERE order_id = ?";
+                        PreparedStatement deleteOrderStmt = conn.prepareStatement(deleteOrderQuery);
+                        deleteOrderStmt.setInt(1, orderId);
+                        deleteOrderStmt.executeUpdate();
+
+                        // Commit the transaction
+                        conn.commit();
+                        System.out.println("Order rolled back successfully.");
+                    } else {
+                        System.out.println("Order has already been confirmed. No rollback needed.");
+                    }
+                } else {
+                    System.out.println("Order not found.");
+                }
 
             } catch (SQLException ex) {
                 ex.printStackTrace();

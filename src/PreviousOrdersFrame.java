@@ -34,7 +34,7 @@ public class PreviousOrdersFrame extends JFrame {
         // SQL query to get orders for the specified user ID
         String query = "SELECT order_id, order_date, status, total_amount, service_type "
                 + "FROM Orders "
-                + "WHERE user_id = ?";
+                + "WHERE user_id = ? AND status = 'Completed'";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(query)) {
 
