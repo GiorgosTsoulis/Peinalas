@@ -16,10 +16,12 @@ public class cartFrame extends JFrame {
     private JPanel itemsPanel;
     private JLabel totalAmountLabel;
     private int userId;
+    private storeFrame storeFrame;
 
-    public cartFrame(int orderId, int userId) {
+    public cartFrame(int orderId, int userId, storeFrame storeFrame) {
         this.orderId = orderId;
         this.userId = userId;
+        this.storeFrame = storeFrame;
 
         setTitle("My Cart");
         setSize(600, 400);
@@ -280,6 +282,7 @@ public class cartFrame extends JFrame {
 
                 if (rowsAffected > 0) {
                     JOptionPane.showMessageDialog(this, "Order confirmed and updated successfully.");
+                    storeFrame.dispose(); // Close the store frame
                     dispose(); // Close the cart frame
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to confirm the order. Please try again.");

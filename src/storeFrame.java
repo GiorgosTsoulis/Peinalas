@@ -195,7 +195,7 @@ public class storeFrame extends JFrame {
         });
 
         cartBtn.addActionListener(e -> {
-            new cartFrame(this.orderId, this.userId);
+            new cartFrame(this.orderId, this.userId, this);
         });
 
         this.addWindowListener(new WindowAdapter() {
