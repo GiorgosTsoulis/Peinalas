@@ -42,6 +42,7 @@ public class MenuManager extends JFrame {
 
         this.setPreferredSize(new Dimension(800, 600));
         this.pack();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 

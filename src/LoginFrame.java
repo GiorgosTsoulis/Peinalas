@@ -25,10 +25,9 @@ public class LoginFrame extends JFrame {
 
     public LoginFrame() {
         this.setTitle("Login");
-        this.setLocationRelativeTo(null);
+
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLayout(new GridBagLayout());
-        this.setPreferredSize(new Dimension(300, 250)); // Set preferred size
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -116,7 +115,9 @@ public class LoginFrame extends JFrame {
             }
         });
 
+        this.setPreferredSize(new Dimension(300, 250));
         this.pack();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 

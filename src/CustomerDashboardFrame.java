@@ -21,6 +21,7 @@ public class CustomerDashboardFrame extends DashboardFrame {
     private JComboBox<String> kitchenComboBox;
     private JComboBox<String> priceComboBox;
     private JButton searchBtn;
+
     private JPanel resultsPanel;
     private GridBagConstraints gbc;
     private int userId;
@@ -87,24 +88,36 @@ public class CustomerDashboardFrame extends DashboardFrame {
         filterGbc.weightx = 1;
         filterPanel.add(priceComboBox, filterGbc);
 
-        // Vertical Filler
-        filterGbc.gridx = 0;
-        filterGbc.gridy = 6;
-        filterGbc.weighty = 0.5; // Filler should take up available space
-        filterGbc.fill = GridBagConstraints.BOTH;
-        filterPanel.add(new JPanel(), filterGbc); // Adding an empty panel as a fille
-
         // Search Button
         filterGbc.gridx = 0;
-        filterGbc.gridy = 7;
+        filterGbc.gridy = 6;
         filterGbc.weighty = 0;
         filterGbc.fill = GridBagConstraints.HORIZONTAL;
         filterPanel.add(searchBtn, filterGbc);
 
+        // Vertical Filler
+        filterGbc.gridx = 0;
+        filterGbc.gridy = 7;
+        filterGbc.weighty = 0.5; // Filler should take up available space
+        filterGbc.fill = GridBagConstraints.BOTH;
+        filterPanel.add(new JPanel(), filterGbc); // Adding an empty panel as a fille
+
+        // Active Orders button
+        JButton activeOrdersButton = new JButton("Active Orders");
+        filterGbc.gridx = 0;
+        filterGbc.gridy = 8;
+        filterGbc.weighty = 0;
+        filterGbc.fill = GridBagConstraints.HORIZONTAL;
+        filterPanel.add(activeOrdersButton, filterGbc);
+
+        activeOrdersButton.addActionListener((ActionEvent e) -> {
+            new ActiveOrdersFrame(userId);
+        });
+
         // Profile button
         JButton profileBtn = new JButton("My Profile");
         filterGbc.gridx = 0;
-        filterGbc.gridy = 8;
+        filterGbc.gridy = 9;
         filterGbc.weighty = 0;
         filterGbc.fill = GridBagConstraints.HORIZONTAL;
         filterPanel.add(profileBtn, filterGbc);
@@ -144,6 +157,7 @@ public class CustomerDashboardFrame extends DashboardFrame {
 
         this.setPreferredSize(new Dimension(600, 500));
         this.pack();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 

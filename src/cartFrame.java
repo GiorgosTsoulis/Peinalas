@@ -24,9 +24,7 @@ public class cartFrame extends JFrame {
         this.storeFrame = storeFrame;
 
         setTitle("My Cart");
-        setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
 
         // Create main panel
         JPanel mainPanel = new JPanel();
@@ -89,7 +87,11 @@ public class cartFrame extends JFrame {
         mainPanel.add(buttonsPanel, BorderLayout.NORTH);
 
         add(mainPanel);
-        setVisible(true);
+
+        this.setPreferredSize(new Dimension(600, 500));
+        this.pack();
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
     }
 
     private void loadOrderItems() {
@@ -270,7 +272,7 @@ public class cartFrame extends JFrame {
                 int lastOrderId = rs.getInt("order_id");
 
                 // Step 2: Update the last order with the current orderId details
-                String updateOrderQuery = "UPDATE Orders SET user_id = (SELECT user_id FROM Orders WHERE order_id = ?), store_id = (SELECT store_id FROM Orders WHERE order_id = ?), order_date = NOW(), status = 'Completed', total_amount = (SELECT SUM(price) FROM OrderItems WHERE order_id = ?), service_type = (SELECT service_type FROM Orders WHERE order_id = ?) WHERE order_id = ?";
+                String updateOrderQuery = "UPDATE Orders SET user_id = (SELECT user_id FROM Orders WHERE order_id = ?), store_id = (SELECT store_id FROM Orders WHERE order_id = ?), order_date = NOW(), status = 'In Progress', total_amount = (SELECT SUM(price) FROM OrderItems WHERE order_id = ?), service_type = (SELECT service_type FROM Orders WHERE order_id = ?), timer_start = NOW() WHERE order_id = ?";
                 PreparedStatement updateOrderStmt = conn.prepareStatement(updateOrderQuery);
                 updateOrderStmt.setInt(1, orderId); // Get user_id from current orderId
                 updateOrderStmt.setInt(2, orderId); // Get store_id from current orderId

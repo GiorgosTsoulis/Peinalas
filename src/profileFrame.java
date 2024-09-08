@@ -18,7 +18,6 @@ public class profileFrame extends JFrame {
         this.userId = userId;
 
         setTitle("My Profile");
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         // Initialize components
@@ -57,6 +56,7 @@ public class profileFrame extends JFrame {
 
         setPreferredSize(new Dimension(400, 300));
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 

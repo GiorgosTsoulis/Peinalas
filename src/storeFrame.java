@@ -208,6 +208,7 @@ public class storeFrame extends JFrame {
 
         this.setPreferredSize(new Dimension(600, 500));
         this.pack();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 
@@ -400,7 +401,7 @@ public class storeFrame extends JFrame {
 
             // Create a new order if this is the first item being added
             if (orderId == null) {
-                String insertOrderQuery = "INSERT INTO Orders (user_id, store_id, status) VALUES (?, ?, 'In Progress')";
+                String insertOrderQuery = "INSERT INTO Orders (user_id, store_id, status) VALUES (?, ?, 'Pending')";
                 PreparedStatement insertOrderStmt = conn.prepareStatement(insertOrderQuery,
                         PreparedStatement.RETURN_GENERATED_KEYS);
                 insertOrderStmt.setInt(1, userId); // Assuming user_id is 1; adjust as necessary

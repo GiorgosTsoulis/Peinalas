@@ -13,6 +13,7 @@ CREATE TABLE Stores(
     phone_number VARCHAR(20),
     website VARCHAR(255),
     opening_hours VARCHAR(255),
+    preparation_time INT DEFAULT 30,
     PRIMARY KEY(store_id)
 );
 
@@ -73,13 +74,16 @@ CREATE TABLE Orders (
     user_id INT, -- ID of the customer who placed the order
     store_id INT, -- ID of the store where the order was placed
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP, -- When the order was placed
-    status ENUM('In Progress', 'Completed', 'Cancelled') DEFAULT 'In Progress', -- Current status of the order
+    status ENUM('Pending', 'In Progress', 'Confirmed', 'Cancelled', 'Completed') DEFAULT 'Pending', -- Current status of the order
     total_amount DECIMAL(10, 2), -- Total amount of the order
     service_type ENUM('Takeaway', 'Dine-in') NOT NULL, -- Whether the order is for takeaway or dine-in
+    timer_start DATETIME,
+    timer_end DATETIME,
     PRIMARY KEY(order_id),
     FOREIGN KEY(user_id) REFERENCES Users(user_id),
     FOREIGN KEY(store_id) REFERENCES Stores(store_id)
 );
+
 
 CREATE TABLE OrderItems (
     order_item_id INT AUTO_INCREMENT,
@@ -95,27 +99,27 @@ CREATE TABLE OrderItems (
 );
 
 
-INSERT INTO Stores(name, location, kitchenCategory, priceCategory, phone_number, website, opening_hours) VALUES
-('The Cozy Corner', 'San Francisco', 'American', 'Cheap eats', '415-123-4567', 'www.cozycorner.com', '8:00 AM - 8:00 PM'),
-('Bistro Bella', 'New York', 'French', 'Fine dining', '212-987-6543', 'www.bistrobella.com', '6:00 PM - 11:00 PM'),
-('Sushi World', 'San Diego', 'Japanese', 'Mid-range', '619-234-5678', 'www.sushiworld.com', '11:00 AM - 10:00 PM'),
-('Taco Haven', 'San Antonio', 'Mexican', 'Cheap eats', '210-876-5432', 'www.tacohaven.com', '9:00 AM - 9:00 PM'),
-('Cafe Mocha', 'Seattle', 'Coffee', 'Mid-range', '206-765-4321', 'www.cafemocha.com', '7:00 AM - 7:00 PM'),
-('Dragon Palace', 'Las Vegas', 'Chinese', 'Fine dining', '702-345-6789', 'www.dragonpalace.com', '5:00 PM - 12:00 AM'),
-('Vegan Delight', 'Portland', 'Vegan', 'Cheap eats', '503-543-2109', 'www.vegandelight.com', '10:00 AM - 8:00 PM'),
-('Pasta Paradiso', 'Chicago', 'Italian', 'Mid-range', '312-987-1234', 'www.pastaparadiso.com', '11:30 AM - 10:00 PM'),
-('Tex-Mex Grill', 'Dallas', 'Mexican', 'Mid-range', '214-654-3210', 'www.texmexgrill.com', '11:00 AM - 10:00 PM'),
-('Green Garden', 'Austin', 'Vegan', 'Fine dining', '512-345-6789', 'www.greengarden.com', '5:30 PM - 11:00 PM'),
-('The Great Escape', 'Miami', 'American', 'Mid-range', '305-123-7890', 'www.greatescape.com', '12:00 PM - 10:00 PM'),
-('Szechuan Spice', 'San Francisco', 'Chinese', 'Mid-range', '415-234-6789', 'www.szechuan-spice.com', '11:00 AM - 10:00 PM'),
-('Harvest Bistro', 'Denver', 'American', 'Fine dining', '303-567-8901', 'www.harvestbistro.com', '6:00 PM - 11:00 PM'),
-('El Mexicano', 'Houston', 'Mexican', 'Cheap eats', '713-987-6543', 'www.elmexicano.com', '9:00 AM - 9:00 PM'),
-('The Sushi Bar', 'Los Angeles', 'Japanese', 'Cheap eats', '310-876-5432', 'www.sushibar.com', '11:00 AM - 10:00 PM'),
-('Le Gourmet', 'New York', 'French', 'Mid-range', '212-456-7890', 'www.legourmet.com', '6:00 PM - 10:00 PM'),
-('The Diner', 'Philadelphia', 'American', 'Cheap eats', '215-123-9876', 'www.thediner.com', '7:00 AM - 9:00 PM'),
-('Seafood Shack', 'San Diego', 'Seafood', 'Fine dining', '619-567-4321', 'www.seafoodshack.com', '6:00 PM - 11:00 PM'),
-('Gourmet Garden', 'San Francisco', 'Vegan', 'Mid-range', '415-678-2345', 'www.gourmetgarden.com', '12:00 PM - 9:00 PM'),
-('Ristorante Roma', 'Chicago', 'Italian', 'Fine dining', '312-876-5432', 'www.ristoranteroma.com', '6:30 PM - 11:00 PM');
+INSERT INTO Stores(name, location, kitchenCategory, priceCategory, phone_number, website, opening_hours, preparation_time) VALUES
+('The Cozy Corner', 'San Francisco', 'American', 'Cheap eats', '415-123-4567', 'www.cozycorner.com', '8:00 AM - 8:00 PM', 30),
+('Bistro Bella', 'New York', 'French', 'Fine dining', '212-987-6543', 'www.bistrobella.com', '6:00 PM - 11:00 PM', 45),
+('Sushi World', 'San Diego', 'Japanese', 'Mid-range', '619-234-5678', 'www.sushiworld.com', '11:00 AM - 10:00 PM', 35),
+('Taco Haven', 'San Antonio', 'Mexican', 'Cheap eats', '210-876-5432', 'www.tacohaven.com', '9:00 AM - 9:00 PM', 25),
+('Cafe Mocha', 'Seattle', 'Coffee', 'Mid-range', '206-765-4321', 'www.cafemocha.com', '7:00 AM - 7:00 PM', 20),
+('Dragon Palace', 'Las Vegas', 'Chinese', 'Fine dining', '702-345-6789', 'www.dragonpalace.com', '5:00 PM - 12:00 AM', 50),
+('Vegan Delight', 'Portland', 'Vegan', 'Cheap eats', '503-543-2109', 'www.vegandelight.com', '10:00 AM - 8:00 PM', 30),
+('Pasta Paradiso', 'Chicago', 'Italian', 'Mid-range', '312-987-1234', 'www.pastaparadiso.com', '11:30 AM - 10:00 PM', 40),
+('Tex-Mex Grill', 'Dallas', 'Mexican', 'Mid-range', '214-654-3210', 'www.texmexgrill.com', '11:00 AM - 10:00 PM', 30),
+('Green Garden', 'Austin', 'Vegan', 'Fine dining', '512-345-6789', 'www.greengarden.com', '5:30 PM - 11:00 PM', 45),
+('The Great Escape', 'Miami', 'American', 'Mid-range', '305-123-7890', 'www.greatescape.com', '12:00 PM - 10:00 PM', 30),
+('Szechuan Spice', 'San Francisco', 'Chinese', 'Mid-range', '415-234-6789', 'www.szechuan-spice.com', '11:00 AM - 10:00 PM', 35),
+('Harvest Bistro', 'Denver', 'American', 'Fine dining', '303-567-8901', 'www.harvestbistro.com', '6:00 PM - 11:00 PM', 50),
+('El Mexicano', 'Houston', 'Mexican', 'Cheap eats', '713-987-6543', 'www.elmexicano.com', '9:00 AM - 9:00 PM', 30),
+('The Sushi Bar', 'Los Angeles', 'Japanese', 'Cheap eats', '310-876-5432', 'www.sushibar.com', '11:00 AM - 10:00 PM', 30),
+('Le Gourmet', 'New York', 'French', 'Mid-range', '212-456-7890', 'www.legourmet.com', '6:00 PM - 10:00 PM', 40),
+('The Diner', 'Philadelphia', 'American', 'Cheap eats', '215-123-9876', 'www.thediner.com', '7:00 AM - 9:00 PM', 25),
+('Seafood Shack', 'San Diego', 'Seafood', 'Fine dining', '619-567-4321', 'www.seafoodshack.com', '6:00 PM - 11:00 PM', 45),
+('Gourmet Garden', 'San Francisco', 'Vegan', 'Mid-range', '415-678-2345', 'www.gourmetgarden.com', '12:00 PM - 9:00 PM', 30),
+('Ristorante Roma', 'Chicago', 'Italian', 'Fine dining', '312-876-5432', 'www.ristoranteroma.com', '6:30 PM - 11:00 PM', 50);
 
 
 
@@ -197,15 +201,16 @@ INSERT INTO MenuItems (store_id, item_name, description, price, item_category) V
 (20, 'Gelato', 'Italian ice cream available in various flavors.', 5.99, 'Dessert');
 
 
-INSERT INTO Orders (user_id, store_id, total_amount, status, service_type) VALUES
-(4, 1, 17.97, 'Pending', 'Takeaway'),
-(4, 2, 27.97, 'Completed', 'Dine-in'),
-(4, 3, 15.97, 'In Progress', 'Takeaway'),
-(4, 6, 35.97, 'Completed', 'Dine-in'),
-(4, 4, 13.47, 'Pending', 'Takeaway'),
-(4, 8, 33.97, 'Completed', 'Dine-in'),
-(4, 7, 22.47, 'Cancelled', 'Takeaway'),
-(4, 11, 29.97, 'Completed', 'Dine-in');
+INSERT INTO Orders (user_id, store_id, total_amount, status, service_type, timer_start, timer_end) VALUES
+(4, 1, 17.97, 'Pending', 'Takeaway', NULL, NULL),
+(4, 4, 13.47, 'Pending', 'Takeaway', NULL, NULL),
+(4, 3, 15.97, 'In Progress', 'Takeaway', CURRENT_TIMESTAMP, NULL),
+(4, 2, 27.97, 'Completed', 'Dine-in', '2024-09-01 12:00:00', '2024-09-01 12:30:00'),
+(4, 6, 35.97, 'Completed', 'Dine-in', '2024-09-02 15:00:00', '2024-09-02 15:45:00'),
+(4, 8, 33.97, 'Completed', 'Dine-in', '2024-09-03 17:30:00', '2024-09-03 18:00:00'),
+(4, 11, 29.97, 'Completed', 'Dine-in', '2024-09-04 13:15:00', '2024-09-04 13:50:00'),
+(4, 7, 22.47, 'Cancelled', 'Takeaway', '2024-09-05 10:30:00', '2024-09-05 10:50:00');
+
 
 
 INSERT INTO OrderItems (order_id, item_id, user_id, quantity, price) VALUES

@@ -12,7 +12,6 @@ public class PreviousOrdersFrame extends JFrame {
     public PreviousOrdersFrame(int userId) {
         this.userId = userId; // Store the userId
         setTitle("Previous Orders");
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         // Initialize components
@@ -27,6 +26,7 @@ public class PreviousOrdersFrame extends JFrame {
 
         setPreferredSize(new Dimension(800, 600));
         pack();
+        this.setLocationRelativeTo(null);
         setVisible(true);
     }
 

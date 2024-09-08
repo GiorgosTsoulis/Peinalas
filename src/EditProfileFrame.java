@@ -23,7 +23,6 @@ public class EditProfileFrame extends JFrame {
         this.myProfileFrame = myProfileFrame;
 
         setTitle("Edit Profile");
-        setLocationRelativeTo(null);
         setLayout(new GridLayout(8, 2)); // Adjust layout to accommodate password fields
 
         // Initialize components
@@ -66,6 +65,7 @@ public class EditProfileFrame extends JFrame {
 
         setPreferredSize(new Dimension(300, 300)); // Adjust size to accommodate all fields
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
