@@ -146,6 +146,7 @@ public class ActiveOrdersFrame extends JFrame {
                                     updateStmt.setInt(1, Integer.parseInt(labels[0].getText())); // Assuming orderId is
                                                                                                  // the first label
                                     updateStmt.executeUpdate();
+                                    OrderNotificationScheduler.checkOrdersAndSendNotifications();
                                 }
                             } else {
                                 JOptionPane.showMessageDialog(null, "Database connection error.");

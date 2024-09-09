@@ -7,7 +7,7 @@ public class MenuManager extends JFrame {
 
     private JTable foodProductsTable;
     private DefaultTableModel tableModel;
-    private JButton addBtn, editBtn, deleteBtn;
+    private JButton addBtn, editBtn, deleteBtn, backBtn;
     private int storeId; // Store ID the staff works at
 
     public MenuManager(int storeId) {
@@ -21,12 +21,14 @@ public class MenuManager extends JFrame {
         addBtn = new JButton("Add");
         editBtn = new JButton("Edit");
         deleteBtn = new JButton("Delete");
+        backBtn = new JButton("Back");
 
         // Layout setup
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addBtn);
         buttonPanel.add(editBtn);
         buttonPanel.add(deleteBtn);
+        buttonPanel.add(backBtn);
 
         // Add components to frame
         this.add(new JScrollPane(foodProductsTable), BorderLayout.CENTER);
@@ -39,6 +41,7 @@ public class MenuManager extends JFrame {
         addBtn.addActionListener(e -> addFoodProduct());
         editBtn.addActionListener(e -> editFoodProduct());
         deleteBtn.addActionListener(e -> deleteFoodProduct());
+        backBtn.addActionListener(e -> this.dispose());
 
         this.setPreferredSize(new Dimension(800, 600));
         this.pack();
