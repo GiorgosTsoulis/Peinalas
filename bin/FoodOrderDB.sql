@@ -79,6 +79,7 @@ CREATE TABLE Orders (
     service_type ENUM('Takeaway', 'Dine-in') NOT NULL, -- Whether the order is for takeaway or dine-in
     timer_start DATETIME,
     timer_end DATETIME,
+    notification_sent BOOLEAN DEFAULT FALSE,
     PRIMARY KEY(order_id),
     FOREIGN KEY(user_id) REFERENCES Users(user_id),
     FOREIGN KEY(store_id) REFERENCES Stores(store_id)
