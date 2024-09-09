@@ -1,8 +1,7 @@
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.*;
 import java.sql.*;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -12,7 +11,7 @@ public class ActiveOrdersFrame extends JFrame {
     private int userId;
     private JPanel contentPanel;
 
-    ActiveOrdersFrame(int userId) {
+    public ActiveOrdersFrame(int userId) {
         this.userId = userId;
         this.setTitle("My Active Orders");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -109,15 +108,14 @@ public class ActiveOrdersFrame extends JFrame {
                 gbc.gridx = 0; // Reset to first column for next row
 
                 // Start the timer task
-                startTimer(timerStart, preparationTime, timerLabel, orderIdLabel, storeNameLabel, totalAmountLabel,
-                        serviceTypeLabel);
+                startTimer(orderId, timerStart, preparationTime, timerLabel);
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error loading orders: " + ex.getMessage());
         }
     }
 
-    private void startTimer(Timestamp timerStart, int preparationTime, JLabel timerLabel, JLabel... labels) {
+    private void startTimer(int orderId, Timestamp timerStart, int preparationTime, JLabel timerLabel) {
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
             @Override
@@ -132,28 +130,11 @@ public class ActiveOrdersFrame extends JFrame {
                         timerLabel.setText("Time left: 00:00");
                         timer.cancel();
                         contentPanel.remove(timerLabel);
-                        for (JLabel label : labels) {
-                            contentPanel.remove(label);
-                        }
                         contentPanel.revalidate();
                         contentPanel.repaint();
 
                         // Update the order status in the database
-                        try (Connection conn = DatabaseConnection.getConnection()) {
-                            if (conn != null) {
-                                String updateQuery = "UPDATE Orders SET status = 'Completed' WHERE order_id = ?";
-                                try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
-                                    updateStmt.setInt(1, Integer.parseInt(labels[0].getText())); // Assuming orderId is
-                                                                                                 // the first label
-                                    updateStmt.executeUpdate();
-                                    OrderNotificationScheduler.checkOrdersAndSendNotifications();
-                                }
-                            } else {
-                                JOptionPane.showMessageDialog(null, "Database connection error.");
-                            }
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(null, "Error updating order status: " + ex.getMessage());
-                        }
+                        updateOrderStatus(orderId);
                     } else {
                         long minutes = (remainingTime / 1000) / 60;
                         long seconds = (remainingTime / 1000) % 60;
@@ -164,5 +145,25 @@ public class ActiveOrdersFrame extends JFrame {
         };
 
         timer.scheduleAtFixedRate(task, 0, 1000);
+    }
+
+    private void updateOrderStatus(int orderId) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            if (conn == null) {
+                JOptionPane.showMessageDialog(null, "Database connection error.");
+                return;
+            }
+
+            String updateQuery = "UPDATE Orders SET status = 'Completed' WHERE order_id = ?";
+            try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
+                updateStmt.setInt(1, orderId);
+                updateStmt.executeUpdate();
+
+                // Notify user about the status update
+                OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Error updating order status: " + ex.getMessage());
+        }
     }
 }

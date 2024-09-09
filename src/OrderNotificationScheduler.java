@@ -5,19 +5,19 @@ import java.sql.SQLException;
 
 public class OrderNotificationScheduler {
 
-    public static void checkOrdersAndSendNotifications() {
+    public static void checkOrdersAndSendNotifications(int orderId) {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            // Query for orders that need notifications and haven't been notified yet
+            // Query for a specific order that needs notification and hasn't been notified
+            // yet
             String query = "SELECT o.order_id, u.email, o.status, o.timer_end " +
                     "FROM Orders o " +
                     "JOIN Users u ON o.user_id = u.user_id " +
-                    "WHERE (o.status = 'Confirmed' OR o.status = 'In Progress' OR o.status = 'Completed') " +
-                    "AND o.notification_sent = FALSE";
+                    "WHERE o.order_id = ?";
 
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, orderId); // Set the specific order ID
                 try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        int orderId = rs.getInt("order_id");
+                    if (rs.next()) {
                         String email = rs.getString("email");
                         String status = rs.getString("status");
 

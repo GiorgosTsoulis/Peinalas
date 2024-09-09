@@ -10,6 +10,7 @@ import java.sql.SQLException;
 public class StaffDashboardFrame extends JFrame {
 
     private final int userId;
+    private int storeId;
     private JPanel staffDetailsPanel;
     private JPanel buttonPanel;
 
@@ -24,10 +25,10 @@ public class StaffDashboardFrame extends JFrame {
         displayStaffDetails();
 
         // Set the frame properties
-        this.setPreferredSize(new Dimension(500, 400)); // Increased size for better layout
-        this.setLocationRelativeTo(null);
+        this.setPreferredSize(new Dimension(600, 500)); // Increased size for better layout
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.pack();
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
 
@@ -109,7 +110,7 @@ public class StaffDashboardFrame extends JFrame {
                     String lastname = rs.getString("lastname");
                     String email = rs.getString("email");
                     String phoneNumber = rs.getString("number");
-                    int storeId = rs.getInt("store_id");
+                    storeId = rs.getInt("store_id");
                     String storeName = rs.getString("store_name");
                     String storeAddress = rs.getString("store_address");
                     String kitchenCategory = rs.getString("kitchenCategory");
@@ -150,12 +151,12 @@ public class StaffDashboardFrame extends JFrame {
 
     private void openMenuManager() {
         // Create and open the MenuManager frame
-        new MenuManager(userId);
+        new MenuManager(storeId);
     }
 
     private void openOrderManager() {
         // Create and open the OrderManager frame
-        new OrderManager(userId);
+        new OrderManager(storeId);
     }
 
     private void openCouponManager() {

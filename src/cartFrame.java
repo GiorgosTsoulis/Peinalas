@@ -283,7 +283,7 @@ public class cartFrame extends JFrame {
                 int rowsAffected = updateOrderStmt.executeUpdate();
 
                 if (rowsAffected > 0) {
-                    OrderNotificationScheduler.checkOrdersAndSendNotifications();
+                    OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
                     JOptionPane.showMessageDialog(this, "Order confirmed and updated successfully.");
                     storeFrame.dispose(); // Close the store frame
                     dispose(); // Close the cart frame

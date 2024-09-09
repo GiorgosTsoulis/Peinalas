@@ -43,7 +43,7 @@ public class MenuManager extends JFrame {
         deleteBtn.addActionListener(e -> deleteFoodProduct());
         backBtn.addActionListener(e -> this.dispose());
 
-        this.setPreferredSize(new Dimension(800, 600));
+        this.setPreferredSize(new Dimension(600, 500));
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
