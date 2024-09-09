@@ -26,21 +26,11 @@ public class OrderNotificationScheduler {
 
                         EmailSender.sendEmail(email, subject, body);
 
-                        // Update the notification_sent column to TRUE
-                        markNotificationSent(conn, orderId);
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-    }
-
-    private static void markNotificationSent(Connection conn, int orderId) throws SQLException {
-        String updateQuery = "UPDATE Orders SET notification_sent = TRUE WHERE order_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
-            stmt.setInt(1, orderId);
-            stmt.executeUpdate();
         }
     }
 
