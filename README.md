@@ -1,12 +1,12 @@
-# Foody
+# Peinalas
 
 ## Overview
-Foody is a university project developed using Java Swing for the front-end and MySQL for the back-end. It simulates an online food delivery system, providing core functionalities like restaurant search, order management, real-time order tracking, and user account management.
+Peinalas is a university project developed using Java Swing for the front-end and MySQL for the back-end. It simulates an online food delivery system, providing core functionalities like restaurant search, order management, real-time order tracking, and user account management.
 
 This project serves as an example of applying object-oriented programming principles, user interface design with Java Swing, and database management using MySQL.
 
 ## Features
-The Foody application includes the following features:
+The Peinalas application includes the following features:
 
 - User Registration: Allows users to create accounts, with email verification to ensure security.
 - Restaurant Search: Users can search for restaurants based on their location and apply filters for a more refined search.
