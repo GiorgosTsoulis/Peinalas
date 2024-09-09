@@ -34,7 +34,7 @@ public class LoginFrame extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Welcome Label
-        JLabel label1 = new JLabel("Welcome to Foody");
+        JLabel label1 = new JLabel("Welcome to Peinalas");
         label1.setFont(new Font("Arial", Font.BOLD, 24)); // Set font to bold and larger size
         gbc.gridx = 0;
         gbc.gridy = 0;
