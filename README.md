@@ -35,7 +35,7 @@ The Peinalas application includes the following features:
 1. Clone the repository:
 bash
 ```bash
-git clone https://github.com/yourusername/foody.git
+git clone https://github.com/yourusername/Peinalas.git
 ```
 
 2. Import the Project:
