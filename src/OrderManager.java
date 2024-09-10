@@ -12,9 +12,9 @@ public class OrderManager extends JFrame {
 
     private int storeId;
     private JPanel ordersPanel;
-    private JScrollPane scrollPanel, ordersTablePanel;
-    private DefaultTableModel tableModel;
-    private JTable ordersTable;
+    private JScrollPane scrollPanel;
+    private DefaultTableModel pendingTableModel, inProgressTableModel, cancelledTableModel, completedTableModel;
+    private JTable pendingTable, inProgressTable, cancelledTable, completedTable;
 
     public OrderManager(int storeId) {
         this.setTitle("Order Manager");
@@ -36,14 +36,37 @@ public class OrderManager extends JFrame {
         ordersPanel.setLayout(new GridBagLayout());
         scrollPanel = new JScrollPane(ordersPanel);
 
-        ordersTablePanel = new JScrollPane(ordersTable);
+        // Create tabbed pane for different statuses
+        JTabbedPane tabbedPane = new JTabbedPane();
 
-        tableModel = new DefaultTableModel(
+        // Initialize tables for each status
+        pendingTableModel = new DefaultTableModel(
                 new String[] { "Order ID", "User ID", "Order Date", "Total Amount", "Service Type", "Status" }, 0);
-        ordersTable = new JTable(tableModel);
-        ordersTablePanel = new JScrollPane(ordersTable);
+        pendingTable = new JTable(pendingTableModel);
 
-        populateOrdersTable();
+        inProgressTableModel = new DefaultTableModel(
+                new String[] { "Order ID", "User ID", "Order Date", "Total Amount", "Service Type", "Status" }, 0);
+        inProgressTable = new JTable(inProgressTableModel);
+
+        cancelledTableModel = new DefaultTableModel(
+                new String[] { "Order ID", "User ID", "Order Date", "Total Amount", "Service Type", "Status" }, 0);
+        cancelledTable = new JTable(cancelledTableModel);
+
+        completedTableModel = new DefaultTableModel(
+                new String[] { "Order ID", "User ID", "Order Date", "Total Amount", "Service Type", "Status" }, 0);
+        completedTable = new JTable(completedTableModel);
+
+        // Add tables to scroll panes
+        tabbedPane.addTab("Pending Orders", new JScrollPane(pendingTable));
+        tabbedPane.addTab("In Progress Orders", new JScrollPane(inProgressTable));
+        tabbedPane.addTab("Cancelled Orders", new JScrollPane(cancelledTable));
+        tabbedPane.addTab("Completed Orders", new JScrollPane(completedTable));
+
+        // Load the orders into the tables
+        populateOrdersTable("Pending", pendingTableModel);
+        populateOrdersTable("In Progress", inProgressTableModel);
+        populateOrdersTable("Cancelled", cancelledTableModel);
+        populateOrdersTable("Completed", completedTableModel);
 
         // Load and display active orders
         loadOrders();
@@ -60,34 +83,84 @@ public class OrderManager extends JFrame {
             }
         });
 
+        pendingTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int selectedRow = pendingTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    int orderId = (int) pendingTableModel.getValueAt(selectedRow, 0);
+                    new OrderDetails(orderId, OrderManager.this); // Open OrderDetails frame
+                }
+            }
+        });
+
+        cancelledTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int selectedRow = cancelledTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    int orderId = (int) cancelledTableModel.getValueAt(selectedRow, 0);
+                    new OrderDetails(orderId, null); // Open OrderDetails frame
+                }
+            }
+        });
+
+        completedTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int selectedRow = completedTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    int orderId = (int) completedTable.getValueAt(selectedRow, 0);
+                    new OrderDetails(orderId, null); // Open OrderDetails frame
+                }
+            }
+        });
+
+        inProgressTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int selectedRow = inProgressTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    int orderId = (int) inProgressTable.getValueAt(selectedRow, 0);
+                    new OrderDetails(orderId, OrderManager.this); // Open OrderDetails frame
+                }
+            }
+        });
+
         add(scrollPanel, BorderLayout.CENTER);
-        add(ordersTablePanel, BorderLayout.WEST);
+        add(tabbedPane, BorderLayout.WEST);
         add(backBtnPanel, BorderLayout.SOUTH);
     }
 
-    private void populateOrdersTable() {
+    private void populateOrdersTable(String status, DefaultTableModel tableModel) {
         try (Connection conn = DatabaseConnection.getConnection()) {
             if (conn == null) {
                 JOptionPane.showMessageDialog(this, "Database connection error.");
                 return;
             }
 
+            // Query based on status
             String query = "SELECT order_id, user_id, order_date, total_amount, service_type, status "
-                    + "FROM Orders WHERE store_id = ?";
+                    + "FROM Orders WHERE store_id = ? AND status = ?";
 
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, storeId);
+            pstmt.setString(2, status);
             ResultSet rs = pstmt.executeQuery();
 
+            // Clear previous rows
+            tableModel.setRowCount(0);
+
+            // Add rows to the table model
             while (rs.next()) {
                 int orderId = rs.getInt("order_id");
                 int userId = rs.getInt("user_id");
                 String orderDate = rs.getString("order_date");
                 double totalAmount = rs.getDouble("total_amount");
                 String serviceType = rs.getString("service_type");
-                String status = rs.getString("status");
+                String orderStatus = rs.getString("status");
 
-                tableModel.addRow(new Object[] { orderId, userId, orderDate, totalAmount, serviceType, status });
+                tableModel.addRow(new Object[] { orderId, userId, orderDate, totalAmount, serviceType, orderStatus });
             }
 
         } catch (SQLException e) {
@@ -149,7 +222,6 @@ public class OrderManager extends JFrame {
                 // Add buttons in the same row
                 JButton confirmButton = new JButton("Confirm");
                 JButton cancelButton = new JButton("Cancel");
-                JButton completeButton = new JButton("Complete");
 
                 orderGbc.gridy = 1;
                 orderGbc.gridwidth = 1;
@@ -158,9 +230,6 @@ public class OrderManager extends JFrame {
 
                 orderGbc.gridx = 1;
                 orderPanel.add(cancelButton, orderGbc);
-
-                // orderGbc.gridx = 2;
-                // orderPanel.add(completeButton, orderGbc);
 
                 gbc.gridy++;
                 gbc.gridx = 0;
@@ -184,13 +253,6 @@ public class OrderManager extends JFrame {
                     }
                 });
 
-                completeButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        updateOrderStatus(orderId, "Completed");
-                    }
-                });
-
             }
 
         } catch (SQLException e) {
@@ -202,7 +264,7 @@ public class OrderManager extends JFrame {
         ordersPanel.repaint();
     }
 
-    private void updateOrderStatus(int orderId, String status) {
+    public void updateOrderStatus(int orderId, String status) {
         try (Connection conn = DatabaseConnection.getConnection()) {
             if (conn == null) {
                 JOptionPane.showMessageDialog(this, "Database connection error.");
@@ -226,6 +288,8 @@ public class OrderManager extends JFrame {
                 if (rowsAffected > 0) {
                     OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
                     JOptionPane.showMessageDialog(this, "Status changed successfully and email sent to client.");
+                    refreshTables();
+
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to change the status. Please try again.");
                 }
@@ -238,5 +302,12 @@ public class OrderManager extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void refreshTables() {
+        populateOrdersTable("Pending", pendingTableModel);
+        populateOrdersTable("In Progress", inProgressTableModel);
+        populateOrdersTable("Cancelled", cancelledTableModel);
+        populateOrdersTable("Completed", completedTableModel);
     }
 }
