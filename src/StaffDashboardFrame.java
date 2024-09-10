@@ -77,6 +77,17 @@ public class StaffDashboardFrame extends JFrame {
             }
         });
         buttonPanel.add(couponManagerButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                new LoginFrame();
+            }
+        });
+        buttonPanel.add(logoutButton);
     }
 
     private void displayStaffDetails() {

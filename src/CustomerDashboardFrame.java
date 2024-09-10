@@ -126,6 +126,19 @@ public class CustomerDashboardFrame extends DashboardFrame {
             openProfileFrame(userId);
         });
 
+        // Logout button
+        JButton logoutBtn = new JButton("Logout");
+        filterGbc.gridx = 0;
+        filterGbc.gridy = 10;
+        filterGbc.weighty = 0;
+        filterGbc.fill = GridBagConstraints.HORIZONTAL;
+        filterPanel.add(logoutBtn, filterGbc);
+
+        logoutBtn.addActionListener((ActionEvent e) -> {
+            this.dispose();
+            new LoginFrame();
+        });
+
         // Results Panel with ScrollPane
         JScrollPane scrollPane = new JScrollPane(resultsPanel);
         scrollPane.setBorder(null);

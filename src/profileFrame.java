@@ -11,6 +11,7 @@ public class profileFrame extends JFrame {
 
     private JButton editProfileBtn;
     private JButton previousOrdersBtn;
+    private JButton backBtn;
 
     private int userId; // Store user ID
 
@@ -28,6 +29,7 @@ public class profileFrame extends JFrame {
 
         editProfileBtn = new JButton("Edit Profile");
         previousOrdersBtn = new JButton("Previous Orders");
+        backBtn = new JButton("Back");
 
         // Panel for profile details
         JPanel profileDetailsPanel = new JPanel(new GridLayout(4, 1));
@@ -43,6 +45,7 @@ public class profileFrame extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(editProfileBtn);
         buttonPanel.add(previousOrdersBtn);
+        buttonPanel.add(backBtn);
 
         // Add button panel to the bottom of the frame
         add(buttonPanel, BorderLayout.SOUTH);
@@ -53,8 +56,9 @@ public class profileFrame extends JFrame {
         // Add action listeners
         editProfileBtn.addActionListener(e -> new EditProfileFrame(userId, this));
         previousOrdersBtn.addActionListener(e -> new PreviousOrdersFrame(userId));
+        backBtn.addActionListener(e -> this.dispose());
 
-        setPreferredSize(new Dimension(400, 300));
+        setPreferredSize(new Dimension(600, 500));
         pack();
         setLocationRelativeTo(null);
         setVisible(true);

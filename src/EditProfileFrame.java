@@ -14,6 +14,7 @@ public class EditProfileFrame extends JFrame {
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
     private JButton saveBtn;
+    private JButton backBtn;
 
     private int userId;
     private profileFrame myProfileFrame;
@@ -34,6 +35,7 @@ public class EditProfileFrame extends JFrame {
         passwordField = new JPasswordField();
         confirmPasswordField = new JPasswordField();
         saveBtn = new JButton("Save");
+        backBtn = new JButton("Back");
 
         // Add components to the frame
         add(new JLabel("First Name:"));
@@ -51,6 +53,7 @@ public class EditProfileFrame extends JFrame {
         add(new JLabel("Confirm Password:"));
         add(confirmPasswordField);
         add(saveBtn);
+        add(backBtn);
 
         // Load current user details
         loadUserProfile();
@@ -63,7 +66,15 @@ public class EditProfileFrame extends JFrame {
             }
         });
 
-        setPreferredSize(new Dimension(300, 300)); // Adjust size to accommodate all fields
+        // Add action listener to the back button
+        backBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Close the EditProfile frame
+            }
+        });
+
+        setPreferredSize(new Dimension(400, 300)); // Adjust size to accommodate all fields
         pack();
         setLocationRelativeTo(null);
         setVisible(true);

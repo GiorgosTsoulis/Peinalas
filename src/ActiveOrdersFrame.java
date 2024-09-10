@@ -115,7 +115,7 @@ public class ActiveOrdersFrame extends JFrame {
         }
     }
 
-    private void startTimer(int orderId, Timestamp timerStart, int preparationTime, JLabel timerLabel) {
+    public void startTimer(int orderId, Timestamp timerStart, int preparationTime, JLabel timerLabel) {
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
             @Override
@@ -135,6 +135,7 @@ public class ActiveOrdersFrame extends JFrame {
 
                         // Update the order status in the database
                         updateOrderStatus(orderId);
+                        OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
                     } else {
                         long minutes = (remainingTime / 1000) / 60;
                         long seconds = (remainingTime / 1000) % 60;

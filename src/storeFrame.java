@@ -513,7 +513,7 @@ public class storeFrame extends JFrame {
 
                 if (rs.next()) {
                     String status = rs.getString("status");
-                    if ("In Progress".equals(status)) {
+                    if ("Pending".equals(status)) {
                         // Delete OrderItems associated with the orderId
                         String deleteItemsQuery = "DELETE FROM OrderItems WHERE order_id = ?";
                         PreparedStatement deleteItemsStmt = conn.prepareStatement(deleteItemsQuery);

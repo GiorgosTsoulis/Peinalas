@@ -6,12 +6,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.table.DefaultTableModel;
 
 public class OrderManager extends JFrame {
 
     private int storeId;
     private JPanel ordersPanel;
-    private JScrollPane scrollPanel;
+    private JScrollPane scrollPanel, ordersTablePanel;
+    private DefaultTableModel tableModel;
+    private JTable ordersTable;
 
     public OrderManager(int storeId) {
         this.setTitle("Order Manager");
@@ -20,10 +23,7 @@ public class OrderManager extends JFrame {
         // Initialize the frame layout
         initializeLayout();
 
-        // Load and display active orders
-        loadOrders();
-
-        this.setPreferredSize(new Dimension(600, 500));
+        this.setPreferredSize(new Dimension(800, 500));
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -35,6 +35,18 @@ public class OrderManager extends JFrame {
         ordersPanel = new JPanel();
         ordersPanel.setLayout(new GridBagLayout());
         scrollPanel = new JScrollPane(ordersPanel);
+
+        ordersTablePanel = new JScrollPane(ordersTable);
+
+        tableModel = new DefaultTableModel(
+                new String[] { "Order ID", "User ID", "Order Date", "Total Amount", "Service Type", "Status" }, 0);
+        ordersTable = new JTable(tableModel);
+        ordersTablePanel = new JScrollPane(ordersTable);
+
+        populateOrdersTable();
+
+        // Load and display active orders
+        loadOrders();
 
         // Back button
         JButton backBtn = new JButton("Back");
@@ -49,7 +61,38 @@ public class OrderManager extends JFrame {
         });
 
         add(scrollPanel, BorderLayout.CENTER);
+        add(ordersTablePanel, BorderLayout.WEST);
         add(backBtnPanel, BorderLayout.SOUTH);
+    }
+
+    private void populateOrdersTable() {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this, "Database connection error.");
+                return;
+            }
+
+            String query = "SELECT order_id, user_id, order_date, total_amount, service_type, status "
+                    + "FROM Orders WHERE store_id = ?";
+
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setInt(1, storeId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int orderId = rs.getInt("order_id");
+                int userId = rs.getInt("user_id");
+                String orderDate = rs.getString("order_date");
+                double totalAmount = rs.getDouble("total_amount");
+                String serviceType = rs.getString("service_type");
+                String status = rs.getString("status");
+
+                tableModel.addRow(new Object[] { orderId, userId, orderDate, totalAmount, serviceType, status });
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadOrders() {
@@ -71,7 +114,7 @@ public class OrderManager extends JFrame {
             String query = "SELECT o.order_id, o.total_amount, o.status, o.service_type, o.order_date "
                     + "FROM Orders o "
                     + "JOIN Stores st ON o.store_id = st.store_id "
-                    + "WHERE o.store_id = ? AND o.status = 'In Progress'";
+                    + "WHERE o.store_id = ? AND o.status = 'Pending'";
 
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, storeId);
@@ -116,8 +159,8 @@ public class OrderManager extends JFrame {
                 orderGbc.gridx = 1;
                 orderPanel.add(cancelButton, orderGbc);
 
-                orderGbc.gridx = 2;
-                orderPanel.add(completeButton, orderGbc);
+                // orderGbc.gridx = 2;
+                // orderPanel.add(completeButton, orderGbc);
 
                 gbc.gridy++;
                 gbc.gridx = 0;
@@ -128,7 +171,8 @@ public class OrderManager extends JFrame {
                 confirmButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        updateOrderStatus(orderId, "Confirmed");
+                        updateOrderStatus(orderId, "In Progress");
+
                     }
                 });
 
@@ -180,7 +224,6 @@ public class OrderManager extends JFrame {
                 int rowsAffected = updateStmt.executeUpdate();
 
                 if (rowsAffected > 0) {
-                    System.out.println("Order status updated. Triggering email notification.");
                     OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
                     JOptionPane.showMessageDialog(this, "Status changed successfully and email sent to client.");
                 } else {
