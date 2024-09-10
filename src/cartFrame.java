@@ -284,7 +284,8 @@ public class cartFrame extends JFrame {
 
                 if (rowsAffected > 0) {
                     OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
-                    JOptionPane.showMessageDialog(this, "Order confirmed and updated successfully.");
+                    JOptionPane.showMessageDialog(this,
+                            "Your order is pending confirmation. You will receive an email notification shortly.");
                     storeFrame.dispose(); // Close the store frame
                     dispose(); // Close the cart frame
                 } else {

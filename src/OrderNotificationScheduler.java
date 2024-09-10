@@ -35,33 +35,36 @@ public class OrderNotificationScheduler {
     }
 
     public static String createNotificationBody(int orderId, String status) {
+        String emailHeader = "Dear Valued Customer,\n\n";
+        String emailFooter = "\n\nThank you for choosing Peinalas. If you have any questions, feel free to contact our support team.\n\nBest regards,\nPeinalas Team";
+
         switch (status) {
-            case "Confirmed":
-                return "Dear Customer,\n\nYour order with ID " + orderId + " has been confirmed.\n\n" +
-                        "Thank you for choosing our service!\n\n" +
-                        "Best regards,\n" +
-                        "Peinalas Team";
             case "In Progress":
-                return "Dear Customer,\n\nYour order with ID " + orderId + " is currently in progress.\n\n" +
-                        "We will update you once it's completed.\n\n" +
-                        "Best regards,\n" +
-                        "Peinalas Team";
+                return emailHeader +
+                        "Great news! Your order #" + orderId
+                        + "has been confirmed and is currently being prepared. We’ll notify you once it's ready." +
+                        emailFooter;
             case "Completed":
-                return "Dear Customer,\n\nYour order with ID " + orderId
-                        + " has been completed and is ready for pickup.\n\n" +
-                        "Thank you for using our service!\n\n" +
-                        "Best regards,\n" +
-                        "Peinalas Team";
+                return emailHeader +
+                        "Your order #" + orderId
+                        + " is now complete and ready for pickup or delivery. We hope you enjoy your meal!" +
+                        emailFooter;
             case "Cancelled":
-                return "Dear Customer,\n\nYour order with ID " + orderId + " has been cancelled.\n\n" +
-                        "If you have any questions, please contact us.\n\n" +
-                        "Best regards,\n" +
-                        "Peinalas Team";
+                return emailHeader +
+                        "We regret to inform you that your order #" + orderId + " has been cancelled.\n" +
+                        "If you have any concerns or need assistance, please reach out to us." +
+                        emailFooter;
+            case "Pending":
+                return emailHeader +
+                        "Your order #" + orderId
+                        + " is awaiting confirmation. You’ll receive a notification once it has been confirmed." +
+                        emailFooter;
             default:
-                return "Dear Customer,\n\nWe have an update on your order with ID " + orderId + ".\n\n" +
-                        "Please check your order status in our app for more details.\n\n" +
-                        "Best regards,\n" +
-                        "Peinalas Team";
+                return emailHeader +
+                        "We have an important update regarding your order #" + orderId + ".\n" +
+                        "Please check the status in our app for more details." +
+                        emailFooter;
         }
     }
+
 }

@@ -74,12 +74,11 @@ CREATE TABLE Orders (
     user_id INT, -- ID of the customer who placed the order
     store_id INT, -- ID of the store where the order was placed
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP, -- When the order was placed
-    status ENUM('Pending', 'In Progress', 'Confirmed', 'Cancelled', 'Completed') DEFAULT 'Pending', -- Current status of the order
+    status ENUM('Pending', 'In Progress', 'Cancelled', 'Completed') DEFAULT 'Pending', -- Current status of the order
     total_amount DECIMAL(10, 2), -- Total amount of the order
     service_type ENUM('Takeaway', 'Dine-in') NOT NULL, -- Whether the order is for takeaway or dine-in
     timer_start DATETIME,
     timer_end DATETIME,
-    notification_sent BOOLEAN DEFAULT FALSE,
     PRIMARY KEY(order_id),
     FOREIGN KEY(user_id) REFERENCES Users(user_id),
     FOREIGN KEY(store_id) REFERENCES Stores(store_id)
@@ -128,7 +127,7 @@ INSERT INTO Users(username, password, role, firstname, lastname, address, addres
 ('George', '5690', 'Admin', 'George', 'Smith', '123 Main St', '1A', '12345', 'USA', 30, '1234567890', 'george@example.com', 'Male'),
 ('Savvas', '9780', 'Staff', 'Savvas', 'Johnson', '456 Elm St', '2B', '67890', 'USA', 25, '0987654321', 'savvas@example.com', 'Male'),
 ('Peter', '4560', 'Delivery', 'Peter', 'Brown', '789 Oak St', '3C', '11223', 'USA', 28, '1122334455', 'peter@example.com', 'Male'),
-('Kate', '8020', 'Customer', 'Kate', 'Davis', '321 Pine St', '4D', '44556', 'USA', 22, '6677889900', 'kate@example.com', 'Female');
+('Kate', '8020', 'Customer', 'Kate', 'Davis', '321 Pine St', '4D', '44556', 'USA', 22, '6677889900', '07digits@gmail.com', 'Female');
 
 
 INSERT INTO Staff (user_id, store_id, position) VALUES
@@ -203,9 +202,9 @@ INSERT INTO MenuItems (store_id, item_name, description, price, item_category) V
 
 
 INSERT INTO Orders (user_id, store_id, total_amount, status, service_type, timer_start, timer_end) VALUES
-(4, 1, 17.97, 'Pending', 'Takeaway', NULL, NULL),
-(4, 4, 13.47, 'Pending', 'Takeaway', NULL, NULL),
-(4, 3, 15.97, 'In Progress', 'Takeaway', CURRENT_TIMESTAMP, NULL),
+(4, 1, 17.97, 'Completed', 'Takeaway', NULL, NULL),
+(4, 4, 13.47, 'Cmpleted', 'Takeaway', NULL, NULL),
+(4, 3, 15.97, 'Completed', 'Takeaway', CURRENT_TIMESTAMP, NULL),
 (4, 2, 27.97, 'Completed', 'Dine-in', '2024-09-01 12:00:00', '2024-09-01 12:30:00'),
 (4, 6, 35.97, 'Completed', 'Dine-in', '2024-09-02 15:00:00', '2024-09-02 15:45:00'),
 (4, 8, 33.97, 'Completed', 'Dine-in', '2024-09-03 17:30:00', '2024-09-03 18:00:00'),
