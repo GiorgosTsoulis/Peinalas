@@ -15,8 +15,8 @@ public class CouponManager extends JFrame {
     private JPanel couponGeneratorPanel;
     private JScrollPane couponGeneratorScrollPane;
     private JTable couponTable;
-    private JTextField discountField, expirationField, codeField;
-    private JLabel discountLabel, expirationLabel, codeLabel;
+    private JTextField discountField, expirationField, codeField, minOrderField;
+    private JLabel discountLabel, expirationLabel, codeLabel, minOrderLabel;
     private JButton generateButton;
 
     public CouponManager(int storeId) {
@@ -64,19 +64,29 @@ public class CouponManager extends JFrame {
         gbc.gridy = 2;
         couponGeneratorPanel.add(expirationField, gbc);
 
-        codeLabel = new JLabel("Expiration Date:");
+        minOrderLabel = new JLabel("Min Order Value:");
         gbc.gridx = 0;
         gbc.gridy = 3;
+        couponGeneratorPanel.add(minOrderLabel, gbc);
+
+        minOrderField = new JTextField(10);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        couponGeneratorPanel.add(minOrderField, gbc);
+
+        codeLabel = new JLabel("Code:");
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         couponGeneratorPanel.add(codeLabel, gbc);
 
         codeField = new JTextField(10);
         gbc.gridx = 1;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         couponGeneratorPanel.add(codeField, gbc);
 
         generateButton = new JButton("Generate");
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 1;
         couponGeneratorPanel.add(generateButton, gbc);
 
@@ -126,8 +136,8 @@ public class CouponManager extends JFrame {
                 return;
             }
 
-            String query = "INSERT INTO Coupons (coupon_code, discount_amount, discount_type, expiry_date, store_id, usage_limit) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO Coupons (coupon_code, discount_amount, expiry_date, store_id, usage_limit) "
+                    + "VALUES (?, ?, ?, ?, ?)";
 
             try (Connection conn = DatabaseConnection.getConnection()) {
                 if (conn == null) {
@@ -138,10 +148,9 @@ public class CouponManager extends JFrame {
                 PreparedStatement pstmt = conn.prepareStatement(query);
                 pstmt.setString(1, couponCode);
                 pstmt.setDouble(2, discount);
-                pstmt.setString(3, "%");
-                pstmt.setString(4, expirationDate);
-                pstmt.setInt(5, storeId);
-                pstmt.setInt(6, 1);
+                pstmt.setString(3, expirationDate);
+                pstmt.setInt(4, storeId);
+                pstmt.setInt(5, 1);
 
                 int rowsAffected = pstmt.executeUpdate();
                 if (rowsAffected > 0) {
@@ -173,7 +182,7 @@ public class CouponManager extends JFrame {
     private void populateCouponTable() {
         DefaultTableModel tableModel = new DefaultTableModel();
 
-        tableModel.setColumnIdentifiers(new Object[] { "Coupon ID", "Coupon Code", "Discount", "Type", "Expiry Date",
+        tableModel.setColumnIdentifiers(new Object[] { "Coupon ID", "Coupon Code", "Discount", "Expiry Date",
                 "Min Order Value", "Usage Limit" });
         couponTable.setModel(tableModel);
 
@@ -183,7 +192,7 @@ public class CouponManager extends JFrame {
                 return;
             }
 
-            String query = "SELECT coupon_id, coupon_code, discount_amount, discount_type, expiry_date, min_order_value, usage_limit FROM Coupons WHERE store_id = ?";
+            String query = "SELECT coupon_id, coupon_code, discount_amount, expiry_date, min_order_value, usage_limit FROM Coupons WHERE store_id = ?";
 
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, storeId);
@@ -195,12 +204,11 @@ public class CouponManager extends JFrame {
                 int couponId = rs.getInt("coupon_id");
                 String couponCode = rs.getString("coupon_code");
                 double discountAmount = rs.getDouble("discount_amount");
-                String discountType = rs.getString("discount_type");
                 String expiryDate = rs.getString("expiry_date");
                 double minOrderValue = rs.getDouble("min_order_value");
                 int usageLimit = rs.getInt("usage_limit");
 
-                tableModel.addRow(new Object[] { couponId, couponCode, discountAmount, discountType, expiryDate,
+                tableModel.addRow(new Object[] { couponId, couponCode, discountAmount, expiryDate,
                         minOrderValue, usageLimit });
             }
 
