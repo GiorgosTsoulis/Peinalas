@@ -98,6 +98,22 @@ CREATE TABLE OrderItems (
     FOREIGN KEY(user_id) REFERENCES Users(user_id)  -- Setting up the foreign key relation
 );
 
+CREATE TABLE Coupons (
+    coupon_id INT AUTO_INCREMENT,
+    coupon_code VARCHAR(50) UNIQUE NOT NULL,  
+    discount_amount DECIMAL(10, 2) NOT NULL,  
+    discount_type ENUM('Percentage', 'Flat') DEFAULT 'Flat', 
+    expiry_date DATE NOT NULL,  
+    min_order_value DECIMAL(10, 2) DEFAULT 0,  
+    store_id INT,  
+    user_id INT,  
+    usage_limit INT DEFAULT 1,  
+    PRIMARY KEY (coupon_id),
+    FOREIGN KEY (store_id) REFERENCES Stores(store_id),  
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)  
+);
+
+
 
 INSERT INTO Stores(name, location, kitchenCategory, priceCategory, phone_number, website, opening_hours, preparation_time) VALUES
 ('The Cozy Corner', 'San Francisco', 'American', 'Cheap eats', '415-123-4567', 'www.cozycorner.com', '8:00 AM - 8:00 PM', 30),
@@ -203,7 +219,7 @@ INSERT INTO MenuItems (store_id, item_name, description, price, item_category) V
 
 INSERT INTO Orders (user_id, store_id, total_amount, status, service_type, timer_start, timer_end) VALUES
 (4, 1, 17.97, 'Completed', 'Takeaway', NULL, NULL),
-(4, 4, 13.47, 'Cmpleted', 'Takeaway', NULL, NULL),
+(4, 4, 13.47, 'Completed', 'Takeaway', NULL, NULL),
 (4, 3, 15.97, 'Completed', 'Takeaway', CURRENT_TIMESTAMP, NULL),
 (4, 2, 27.97, 'Completed', 'Dine-in', '2024-09-01 12:00:00', '2024-09-01 12:30:00'),
 (4, 6, 35.97, 'Completed', 'Dine-in', '2024-09-02 15:00:00', '2024-09-02 15:45:00'),
