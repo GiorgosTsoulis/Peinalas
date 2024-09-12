@@ -102,15 +102,13 @@ CREATE TABLE Coupons (
     coupon_id INT AUTO_INCREMENT,
     coupon_code VARCHAR(50) UNIQUE NOT NULL,  
     discount_amount DECIMAL(10, 2) NOT NULL,  
-    discount_type ENUM('Percentage', 'Flat') DEFAULT 'Flat', 
+    discount_type ENUM('Percentage', 'Flat') DEFAULT 'Percentage', 
     expiry_date DATE NOT NULL,  
     min_order_value DECIMAL(10, 2) DEFAULT 0,  
-    store_id INT,  
-    user_id INT,  
+    store_id INT,
     usage_limit INT DEFAULT 1,  
     PRIMARY KEY (coupon_id),
-    FOREIGN KEY (store_id) REFERENCES Stores(store_id),  
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)  
+    FOREIGN KEY (store_id) REFERENCES Stores(store_id)  
 );
 
 
