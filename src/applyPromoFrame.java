@@ -10,9 +10,12 @@ import java.sql.SQLException;
 public class applyPromoFrame extends JFrame {
 
     private int orderId;
+    private Runnable onPromoApplied;
 
-    applyPromoFrame(int orderId) {
+    applyPromoFrame(int orderId, Runnable onPromoApplied) {
         this.orderId = orderId;
+        this.onPromoApplied = onPromoApplied;
+        System.out.println("orderId: " + orderId);
 
         // Create a new frame
         this.setTitle("Apply Promo Code");
@@ -41,12 +44,26 @@ public class applyPromoFrame extends JFrame {
         gbc.gridy = 1;
         panel.add(applyButton, gbc);
 
+        JButton skipButton = new JButton("Skip");
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(skipButton, gbc);
+
         // Action for apply button
         applyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String promoCode = promoField.getText();
                 applyPromo(promoCode);
+                dispose();
+            }
+        });
+
+        // Action for skip button
+        skipButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                onPromoApplied.run();
                 dispose();
             }
         });
@@ -69,36 +86,48 @@ public class applyPromoFrame extends JFrame {
                 return;
             }
 
+            // Fetch the total amount from the OrderItems table
+            double totalAmount = fetchTotalAmount(conn);
+            if (totalAmount == -1) {
+                JOptionPane.showMessageDialog(this, "Failed to fetch total amount.");
+                return;
+            }
+
             // Fetch the discount amount and type from the Coupons table
             String query = "SELECT discount_amount, discount_type FROM Coupons WHERE coupon_code = ?";
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, promoCode);
-            ResultSet rs = pstmt.executeQuery();
+            try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+                pstmt.setString(1, promoCode);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    if (rs.next()) {
+                        double discount = rs.getDouble("discount_amount");
+                        String discountType = rs.getString("discount_type");
 
-            if (rs.next()) {
-                double discount = rs.getDouble("discount_amount");
-                String discountType = rs.getString("discount_type");
+                        // Apply discount based on the type (percentage or fixed)
+                        if (discountType.equals("Percentage")) {
+                            totalAmount = totalAmount * (1 - discount / 100);
+                        } else if (discountType.equals("Flat")) {
+                            totalAmount = totalAmount - discount;
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Unknown discount type.");
+                            return;
+                        }
 
-                // Apply discount based on the type (percentage or fixed)
-                if (discountType.equals("Percentage")) {
-                    // Update the total amount by applying percentage discount
-                    String updateOrderQuery = "UPDATE Orders SET total_amount = total_amount * (1 - ? / 100) WHERE order_id = ?";
-                    PreparedStatement updateOrderStmt = conn.prepareStatement(updateOrderQuery);
-                    updateOrderStmt.setDouble(1, discount);
-                    updateOrderStmt.setInt(2, orderId);
-                    updateOrderStmt.executeUpdate();
-                } else if (discountType.equals("Flat")) {
-                    // Update the total amount by subtracting the fixed discount
-                    String updateOrderQuery = "UPDATE Orders SET total_amount = total_amount - ? WHERE order_id = ?";
-                    PreparedStatement updateOrderStmt = conn.prepareStatement(updateOrderQuery);
-                    updateOrderStmt.setDouble(1, discount);
-                    updateOrderStmt.setInt(2, orderId);
-                    updateOrderStmt.executeUpdate();
+                        // Update the Orders table with the new total amount
+                        String updateOrderQuery = "UPDATE Orders SET total_amount = ? WHERE order_id = ?";
+                        try (PreparedStatement updateOrderStmt = conn.prepareStatement(updateOrderQuery)) {
+                            updateOrderStmt.setDouble(1, totalAmount);
+                            updateOrderStmt.setInt(2, orderId);
+                            updateOrderStmt.executeUpdate();
+                        }
+
+                        JOptionPane.showMessageDialog(this, "Promo code applied successfully!");
+                        if (onPromoApplied != null) {
+                            onPromoApplied.run();
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Promo code not found.");
+                    }
                 }
-
-                JOptionPane.showMessageDialog(this, "Promo code applied successfully!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Promo code not found.");
             }
 
         } catch (SQLException ex) {
@@ -107,14 +136,28 @@ public class applyPromoFrame extends JFrame {
         }
     }
 
-    public boolean isValidPromo(String promoCode, Connection conn) {
-        try {
-            String query = "SELECT * FROM Coupons WHERE coupon_code = ? AND expiry_date > NOW() AND usage_limit = 1";
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, promoCode);
-            ResultSet rs = pstmt.executeQuery();
+    private double fetchTotalAmount(Connection conn) {
+        String query = "SELECT SUM(price) AS total_amount FROM OrderItems WHERE order_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, orderId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("total_amount");
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return -1;
+    }
 
-            return rs.next();
+    public boolean isValidPromo(String promoCode, Connection conn) {
+        String query = "SELECT * FROM Coupons WHERE coupon_code = ? AND expiry_date > NOW() AND usage_limit = 1";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, promoCode);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
             return false;
