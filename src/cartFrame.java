@@ -54,6 +54,7 @@ public class cartFrame extends JFrame {
         buttonsPanel.setLayout(new FlowLayout());
 
         JButton confirmButton = new JButton("Confirm Order");
+        JButton promoButton = new JButton("Apply Promo Code");
         JButton discardButton = new JButton("Discard Items");
         JButton continueButton = new JButton("Continue Shopping");
 
@@ -61,6 +62,13 @@ public class cartFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 confirmOrder();
+            }
+        });
+
+        promoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new applyPromoFrame(orderId);
             }
         });
 
@@ -80,6 +88,7 @@ public class cartFrame extends JFrame {
         });
 
         buttonsPanel.add(confirmButton);
+        buttonsPanel.add(promoButton);
         buttonsPanel.add(discardButton);
         buttonsPanel.add(continueButton);
 
