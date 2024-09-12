@@ -6,6 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -195,6 +196,11 @@ public class storeFrame extends JFrame {
         });
 
         cartBtn.addActionListener(e -> {
+            if (orderId == null) {
+                JOptionPane.showMessageDialog(this, "Your cart is empty.", "Empty Cart",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
             new cartFrame(this.orderId, this.userId, this);
         });
 

@@ -26,35 +26,28 @@ public class cartFrame extends JFrame {
         setTitle("My Cart");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // Create main panel
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
 
-        // Items Panel
         itemsPanel = new JPanel();
         itemsPanel.setLayout(new GridBagLayout());
         JScrollPane scrollPane = new JScrollPane(itemsPanel);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Total amount label
         totalAmountLabel = new JLabel("Total Amount: $0.00");
         totalAmountLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Create a panel for total amount
         JPanel totalPanel = new JPanel();
         totalPanel.setLayout(new BorderLayout());
         totalPanel.add(totalAmountLabel, BorderLayout.CENTER);
         mainPanel.add(totalPanel, BorderLayout.SOUTH);
 
-        // Add order items
         loadOrderItems();
 
-        // Buttons panel
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new FlowLayout());
 
         JButton confirmButton = new JButton("Confirm Order");
-        JButton promoButton = new JButton("Apply Promo Code");
         JButton discardButton = new JButton("Discard Items");
         JButton continueButton = new JButton("Continue Shopping");
 
@@ -62,13 +55,6 @@ public class cartFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 confirmOrder();
-            }
-        });
-
-        promoButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new applyPromoFrame(orderId);
             }
         });
 
@@ -83,16 +69,13 @@ public class cartFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                // Continue shopping functionality here
             }
         });
 
         buttonsPanel.add(confirmButton);
-        buttonsPanel.add(promoButton);
         buttonsPanel.add(discardButton);
         buttonsPanel.add(continueButton);
 
-        // Add buttons panel to the top or center of the frame
         mainPanel.add(buttonsPanel, BorderLayout.NORTH);
 
         add(mainPanel);
@@ -105,7 +88,7 @@ public class cartFrame extends JFrame {
 
     private void loadOrderItems() {
         itemsPanel.removeAll();
-        itemLabelsMap.clear(); // Clear the map when loading items
+        itemLabelsMap.clear();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
@@ -131,17 +114,15 @@ public class cartFrame extends JFrame {
                 String itemName = rs.getString("item_name");
                 int quantity = rs.getInt("total_quantity");
                 double totalPrice = rs.getDouble("total_price");
-                int itemId = rs.getInt("item_id"); // Store item_id
+                int itemId = rs.getInt("item_id");
 
-                // Create and store the label
                 JLabel itemLabel = new JLabel(quantity + " " + itemName + "  $" + totalPrice);
                 gbc.gridx = 0;
                 gbc.gridy = row;
                 gbc.gridwidth = 2;
                 itemsPanel.add(itemLabel, gbc);
-                itemLabelsMap.put(itemId, itemLabel); // Store the label in the map
+                itemLabelsMap.put(itemId, itemLabel);
 
-                // Create the "+" and "-" buttons
                 JButton removeButton = new JButton("-");
                 removeButton.addActionListener(e -> {
                     removeItem(itemId);
@@ -162,8 +143,6 @@ public class cartFrame extends JFrame {
 
                 row++;
             }
-
-            // Update total amount
             updateTotalAmount(conn);
 
         } catch (SQLException ex) {
@@ -185,14 +164,12 @@ public class cartFrame extends JFrame {
     }
 
     private void removeItem(int itemId) {
-        // Implement remove item functionality
         try (Connection conn = DatabaseConnection.getConnection()) {
             if (conn == null) {
                 System.out.println("Database connection error.");
                 return;
             }
 
-            // Check the current quantity of the item in the order
             String checkQuantityQuery = "SELECT quantity FROM OrderItems WHERE order_id = ? AND item_id = ?";
             PreparedStatement checkQuantityStmt = conn.prepareStatement(checkQuantityQuery);
             checkQuantityStmt.setInt(1, orderId);
@@ -203,7 +180,7 @@ public class cartFrame extends JFrame {
                 int quantity = rs.getInt("quantity");
 
                 if (quantity > 1) {
-                    // If the quantity is more than 1, decrease it by 1 and adjust the price
+
                     String updateItemQuery = "UPDATE OrderItems SET quantity = quantity - 1, price = price - (SELECT price FROM MenuItems WHERE item_id = ?) WHERE order_id = ? AND item_id = ?";
                     PreparedStatement updateItemStmt = conn.prepareStatement(updateItemQuery);
                     updateItemStmt.setInt(1, itemId);
@@ -211,7 +188,6 @@ public class cartFrame extends JFrame {
                     updateItemStmt.setInt(3, itemId);
                     updateItemStmt.executeUpdate();
                 } else {
-                    // If the quantity is 1, delete the item using the NOT IN condition
                     String deleteItemQuery = "DELETE FROM OrderItems WHERE order_item_id IN ("
                             + "SELECT MIN(order_item_id) "
                             + "FROM OrderItems "
@@ -223,7 +199,6 @@ public class cartFrame extends JFrame {
                     deleteItemStmt.executeUpdate();
                 }
 
-                // Refresh the order items display
                 loadOrderItems();
             }
 
@@ -233,14 +208,12 @@ public class cartFrame extends JFrame {
     }
 
     private void addItem(int itemId) {
-        // Implement add item functionality
         try (Connection conn = DatabaseConnection.getConnection()) {
             if (conn == null) {
                 System.out.println("Database connection error.");
                 return;
             }
 
-            // Assuming default quantity of 1 for addition
             String fetchItemQuery = "SELECT price FROM MenuItems WHERE item_id = ?";
             PreparedStatement fetchItemStmt = conn.prepareStatement(fetchItemQuery);
             fetchItemStmt.setInt(1, itemId);
@@ -257,7 +230,7 @@ public class cartFrame extends JFrame {
                 insertItemStmt.setDouble(4, price);
                 insertItemStmt.executeUpdate();
 
-                loadOrderItems(); // Refresh the order items display
+                loadOrderItems();
             }
 
         } catch (SQLException ex) {
@@ -272,7 +245,6 @@ public class cartFrame extends JFrame {
                 return;
             }
 
-            // Step 1: Identify the last order in the Orders table
             String lastOrderQuery = "SELECT order_id FROM Orders ORDER BY order_id DESC LIMIT 1";
             PreparedStatement lastOrderStmt = conn.prepareStatement(lastOrderQuery);
             ResultSet rs = lastOrderStmt.executeQuery();
@@ -280,23 +252,82 @@ public class cartFrame extends JFrame {
             if (rs.next()) {
                 int lastOrderId = rs.getInt("order_id");
 
-                // Step 2: Update the last order with the current orderId details
                 String updateOrderQuery = "UPDATE Orders SET user_id = (SELECT user_id FROM Orders WHERE order_id = ?), store_id = (SELECT store_id FROM Orders WHERE order_id = ?), order_date = NOW(), status = 'Pending', total_amount = (SELECT SUM(price) FROM OrderItems WHERE order_id = ?), service_type = (SELECT service_type FROM Orders WHERE order_id = ?), timer_start = NOW() WHERE order_id = ?";
                 PreparedStatement updateOrderStmt = conn.prepareStatement(updateOrderQuery);
-                updateOrderStmt.setInt(1, orderId); // Get user_id from current orderId
-                updateOrderStmt.setInt(2, orderId); // Get store_id from current orderId
-                updateOrderStmt.setInt(3, orderId); // Calculate total_amount from current orderId
-                updateOrderStmt.setInt(4, orderId); // Get service_type from current orderId
-                updateOrderStmt.setInt(5, lastOrderId); // Update the last order in the Orders table
+                updateOrderStmt.setInt(1, orderId);
+                updateOrderStmt.setInt(2, orderId);
+                updateOrderStmt.setInt(3, orderId);
+                updateOrderStmt.setInt(4, orderId);
+                updateOrderStmt.setInt(5, lastOrderId);
 
                 int rowsAffected = updateOrderStmt.executeUpdate();
 
                 if (rowsAffected > 0) {
+                    String promoCode = getPromoCodeFromUser();
+                    if (promoCode != null && !promoCode.isEmpty()) {
+
+                        // Query to check the coupon's validity, including min_order_value, store_id,
+                        // and expiry_date
+                        String promoQuery = "SELECT discount_amount, discount_type, min_order_value, store_id, usage_limit"
+                                +
+                                "FROM Coupons " +
+                                "WHERE coupon_code = ? AND usage_limit = 1";
+                        PreparedStatement promoStmt = conn.prepareStatement(promoQuery);
+                        promoStmt.setString(1, promoCode);
+                        ResultSet promoRs = promoStmt.executeQuery();
+
+                        if (promoRs.next()) {
+                            double discountAmount = promoRs.getDouble("discount_amount");
+                            String discountType = promoRs.getString("discount_type");
+                            double minOrderValue = promoRs.getDouble("min_order_value");
+                            int couponStoreId = promoRs.getInt("store_id");
+
+                            String totalQuery = "SELECT total_amount, store_id FROM Orders WHERE order_id = ?";
+                            PreparedStatement totalStmt = conn.prepareStatement(totalQuery);
+                            totalStmt.setInt(1, lastOrderId);
+                            ResultSet totalRs = totalStmt.executeQuery();
+
+                            if (totalRs.next()) {
+                                double totalAmount = totalRs.getDouble("total_amount");
+                                int orderStoreId = totalRs.getInt("store_id");
+
+                                if (totalAmount >= minOrderValue
+                                        && (couponStoreId == orderStoreId)) {
+                                    double newTotalAmount = totalAmount;
+
+                                    if (discountType.equals("Percentage")) {
+                                        newTotalAmount = totalAmount - (totalAmount * discountAmount / 100);
+                                    } else if (discountType.equals("Flat")) {
+                                        newTotalAmount = totalAmount - discountAmount;
+                                    }
+
+                                    // Update the total amount in the Orders table
+                                    String updateTotalQuery = "UPDATE Orders SET total_amount = ? WHERE order_id = ?";
+                                    PreparedStatement updateTotalStmt = conn.prepareStatement(updateTotalQuery);
+                                    updateTotalStmt.setDouble(1, newTotalAmount);
+                                    updateTotalStmt.setInt(2, lastOrderId);
+                                    updateTotalStmt.executeUpdate();
+
+                                    // Update the usage limit of the coupon
+                                    String updateUsageQuery = "UPDATE Coupons SET usage_limit = 0 WHERE coupon_code = ?";
+                                    PreparedStatement updateUsageStmt = conn.prepareStatement(updateUsageQuery);
+                                    updateUsageStmt.setString(1, promoCode);
+                                    updateUsageStmt.executeUpdate();
+
+                                } else {
+                                    JOptionPane.showMessageDialog(this, "Order does not meet the coupon's conditions.");
+                                }
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Invalid, expired, or fully used coupon.");
+                        }
+                    }
+
                     OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
                     JOptionPane.showMessageDialog(this,
                             "Your order is pending confirmation. You will receive an email notification shortly.");
-                    storeFrame.dispose(); // Close the store frame
-                    dispose(); // Close the cart frame
+                    storeFrame.dispose();
+                    dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to confirm the order. Please try again.");
                 }
@@ -310,8 +341,19 @@ public class cartFrame extends JFrame {
         }
     }
 
+    private String getPromoCodeFromUser() {
+
+        String promoCode = JOptionPane.showInputDialog(this, "Enter Promo Code (if any):", "Promo Code",
+                JOptionPane.QUESTION_MESSAGE);
+
+        if (promoCode != null && !promoCode.trim().isEmpty()) {
+            return promoCode.trim();
+        } else {
+            return null;
+        }
+    }
+
     private void discardItems() {
-        // Implement discard items functionality
         try (Connection conn = DatabaseConnection.getConnection()) {
             if (conn == null) {
                 System.out.println("Database connection error.");
@@ -324,7 +366,7 @@ public class cartFrame extends JFrame {
             deleteItemsStmt.executeUpdate();
 
             JOptionPane.showMessageDialog(this, "Items discarded successfully.");
-            loadOrderItems(); // Refresh the order items display
+            loadOrderItems();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
