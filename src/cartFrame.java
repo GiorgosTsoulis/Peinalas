@@ -287,6 +287,7 @@ public class cartFrame extends JFrame {
                             totalStmt.setInt(1, lastOrderId);
                             ResultSet totalRs = totalStmt.executeQuery();
 
+                            // Check if the order meets the coupon's conditions
                             if (totalRs.next()) {
                                 double totalAmount = totalRs.getDouble("total_amount");
                                 int orderStoreId = totalRs.getInt("store_id");
