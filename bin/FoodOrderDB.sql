@@ -237,6 +237,14 @@ INSERT INTO OrderItems (order_id, item_id, user_id, quantity, price) VALUES
 (3, 23, 4, 1, 13.99),
 (3, 24, 4, 1, 6.99);
 
+INSERT INTO Coupons (coupon_code, discount_amount, discount_type, expiry_date, min_order_value, store_id, usage_limit) 
+VALUES 
+('SAVE20', 20.00, 'Flat', '2024-12-31', 50.00, 2, 1),
+('WELCOME10', 10.00, 'Percentage', '2024-11-30', 30.00, 2, 1),
+('FREESHIP', 3.00, 'Flat', '2024-10-31', 0.00, 2, 1),
+('HALFOFF', 50.00, 'Percentage', '2025-01-15', 100.00, 2, 1),
+('SPRINGSALE', 15.00, 'Flat', '2025-03-31', 40.00, 2, 1);
+
 
 SELECT * FROM Users;
 SELECT * FROM Stores;
@@ -245,3 +253,4 @@ SELECT * FROM Staff;
 SELECT * FROM Delivery;
 SELECT * FROM Orders;
 SELECT * FROM OrderItems;
+SELECT * FROM Coupons;
