@@ -111,7 +111,14 @@ CREATE TABLE Coupons (
     FOREIGN KEY (store_id) REFERENCES Stores(store_id)  
 );
 
-
+CREATE TABLE PromoEmailTracker (
+    user_id INT,
+    store_id INT,
+    order_count INT DEFAULT 0,
+    PRIMARY KEY (user_id, store_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (store_id) REFERENCES Stores(store_id)
+);
 
 INSERT INTO Stores(name, location, kitchenCategory, priceCategory, phone_number, website, opening_hours, preparation_time) VALUES
 ('The Cozy Corner', 'San Francisco', 'American', 'Cheap eats', '415-123-4567', 'www.cozycorner.com', '8:00 AM - 8:00 PM', 30),
@@ -216,14 +223,14 @@ INSERT INTO MenuItems (store_id, item_name, description, price, item_category) V
 
 
 INSERT INTO Orders (user_id, store_id, total_amount, status, service_type, timer_start, timer_end) VALUES
-(4, 1, 17.97, 'Completed', 'Takeaway', NULL, NULL),
-(4, 4, 13.47, 'Completed', 'Takeaway', NULL, NULL),
-(4, 3, 15.97, 'Completed', 'Takeaway', CURRENT_TIMESTAMP, NULL),
-(4, 2, 27.97, 'Completed', 'Dine-in', '2024-09-01 12:00:00', '2024-09-01 12:30:00'),
-(4, 6, 35.97, 'Completed', 'Dine-in', '2024-09-02 15:00:00', '2024-09-02 15:45:00'),
-(4, 8, 33.97, 'Completed', 'Dine-in', '2024-09-03 17:30:00', '2024-09-03 18:00:00'),
-(4, 11, 29.97, 'Completed', 'Dine-in', '2024-09-04 13:15:00', '2024-09-04 13:50:00'),
-(4, 7, 22.47, 'Cancelled', 'Takeaway', '2024-09-05 10:30:00', '2024-09-05 10:50:00');
+(1, 1, 17.97, 'Completed', 'Takeaway', NULL, NULL),
+(1, 4, 13.47, 'Completed', 'Takeaway', NULL, NULL),
+(1, 3, 15.97, 'Completed', 'Takeaway', CURRENT_TIMESTAMP, NULL),
+(1, 2, 27.97, 'Completed', 'Dine-in', '2024-09-01 12:00:00', '2024-09-01 12:30:00'),
+(1, 6, 35.97, 'Completed', 'Dine-in', '2024-09-02 15:00:00', '2024-09-02 15:45:00'),
+(1, 8, 33.97, 'Completed', 'Dine-in', '2024-09-03 17:30:00', '2024-09-03 18:00:00'),
+(4, 2, 29.97, 'Completed', 'Dine-in', '2024-09-04 13:15:00', '2024-09-04 13:50:00'),
+(4, 2, 22.47, 'Cancelled', 'Takeaway', '2024-09-05 10:30:00', '2024-09-05 10:50:00');
 
 
 
@@ -239,11 +246,11 @@ INSERT INTO OrderItems (order_id, item_id, user_id, quantity, price) VALUES
 
 INSERT INTO Coupons (coupon_code, discount_amount, discount_type, expiry_date, min_order_value, store_id, usage_limit) 
 VALUES 
-('SAVE20', 20.00, 'Flat', '2024-12-31', 50.00, 2, 1),
-('WELCOME10', 10.00, 'Percentage', '2024-11-30', 30.00, 2, 1),
-('FREESHIP', 3.00, 'Flat', '2024-10-31', 0.00, 2, 1),
-('HALFOFF', 50.00, 'Percentage', '2025-01-15', 100.00, 2, 1),
-('SPRINGSALE', 15.00, 'Flat', '2025-03-31', 40.00, 2, 1);
+('SAVE20', 20.00, 'Flat', '2024-12-31', 50.00, 1, 1),
+('WELCOME10', 10.00, 'Percentage', '2024-11-30', 30.00, 1, 1),
+('FREESHIP', 3.00, 'Flat', '2024-10-31', 0.00, 1, 1),
+('HALFOFF', 50.00, 'Percentage', '2025-01-15', 100.00, 1, 1),
+('SPRINGSALE', 15.00, 'Flat', '2025-03-31', 40.00, 1, 1);
 
 
 SELECT * FROM Users;
