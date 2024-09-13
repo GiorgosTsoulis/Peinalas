@@ -22,6 +22,7 @@ public class CouponManager extends JFrame {
 
     public CouponManager(int storeId) {
         this.storeId = storeId;
+        System.out.println("Store ID: " + storeId);
 
         initializeLayout();
     }

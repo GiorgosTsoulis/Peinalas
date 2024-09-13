@@ -269,9 +269,8 @@ public class cartFrame extends JFrame {
                         // Query to check the coupon's validity, including min_order_value, store_id,
                         // and expiry_date
                         String promoQuery = "SELECT discount_amount, discount_type, min_order_value, store_id, usage_limit "
-                                +
-                                "FROM Coupons " +
-                                "WHERE coupon_code = ? AND usage_limit = 1";
+                                + "FROM Coupons "
+                                + "WHERE coupon_code = ? AND usage_limit = 1";
                         PreparedStatement promoStmt = conn.prepareStatement(promoQuery);
                         promoStmt.setString(1, promoCode);
                         ResultSet promoRs = promoStmt.executeQuery();
@@ -292,8 +291,7 @@ public class cartFrame extends JFrame {
                                 double totalAmount = totalRs.getDouble("total_amount");
                                 int orderStoreId = totalRs.getInt("store_id");
 
-                                if (totalAmount >= minOrderValue
-                                        && (couponStoreId == orderStoreId)) {
+                                if (totalAmount >= minOrderValue && (couponStoreId == orderStoreId)) {
                                     double newTotalAmount = totalAmount;
 
                                     if (discountType.equals("Percentage")) {
@@ -315,6 +313,10 @@ public class cartFrame extends JFrame {
                                     updateUsageStmt.setString(1, promoCode);
                                     updateUsageStmt.executeUpdate();
 
+                                    JOptionPane.showMessageDialog(this,
+                                            "Promo code applied successfully and your total amount has been reduced to $"
+                                                    + newTotalAmount);
+
                                 } else {
                                     JOptionPane.showMessageDialog(this, "Order does not meet the coupon's conditions.");
                                 }
@@ -324,6 +326,7 @@ public class cartFrame extends JFrame {
                         }
                     }
 
+                    EmailPromo.checkAndSendPromoEmail(lastOrderId, userId);
                     OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
                     JOptionPane.showMessageDialog(this,
                             "Your order is pending confirmation. You will receive an email notification shortly.");

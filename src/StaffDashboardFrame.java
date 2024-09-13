@@ -172,6 +172,7 @@ public class StaffDashboardFrame extends JFrame {
 
     private void openCouponManager() {
         // Create and open the CouponManager frame
-        new CouponManager(userId);
+        new CouponManager(storeId);
+
     }
 }
