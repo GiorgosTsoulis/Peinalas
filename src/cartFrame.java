@@ -268,7 +268,7 @@ public class cartFrame extends JFrame {
 
                         // Query to check the coupon's validity, including min_order_value, store_id,
                         // and expiry_date
-                        String promoQuery = "SELECT discount_amount, discount_type, min_order_value, store_id, usage_limit"
+                        String promoQuery = "SELECT discount_amount, discount_type, min_order_value, store_id, usage_limit "
                                 +
                                 "FROM Coupons " +
                                 "WHERE coupon_code = ? AND usage_limit = 1";
