@@ -106,7 +106,8 @@ CREATE TABLE Coupons (
     expiry_date DATE NOT NULL,  
     min_order_value DECIMAL(10, 2) DEFAULT 0,  
     store_id INT,
-    usage_limit INT DEFAULT 1,  
+    usage_limit INT DEFAULT 1,
+    email_sent boolean default false,
     PRIMARY KEY (coupon_id),
     FOREIGN KEY (store_id) REFERENCES Stores(store_id)  
 );

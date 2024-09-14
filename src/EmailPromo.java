@@ -8,11 +8,12 @@ import javax.swing.JOptionPane;
 public class EmailPromo {
 
     public static void sendPromoEmails(Connection conn, int storeId, int userId) throws SQLException {
-        String query = "SELECT u.email, c.coupon_code, c.discount_amount, c.expiry_date " +
+        String query = "SELECT u.email, c.coupon_code, c.discount_amount, c.expiry_date, c.min_order_value, s.name " +
                 "FROM Users u " +
                 "JOIN Orders o ON u.user_id = o.user_id " +
                 "JOIN Coupons c ON o.store_id = c.store_id " +
-                "WHERE o.store_id = ? AND o.user_id = ? AND c.expiry_date >= CURDATE()";
+                "JOIN Stores s ON o.store_id = s.store_id " +
+                "WHERE o.store_id = ? AND o.user_id = ? AND c.expiry_date >= CURDATE() AND c.email_sent = false";
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, storeId); // Set the specific store ID
@@ -24,13 +25,26 @@ public class EmailPromo {
                     String couponCode = rs.getString("coupon_code");
                     double discountAmount = rs.getDouble("discount_amount");
                     String expiryDate = rs.getString("expiry_date");
+                    double minOrderValue = rs.getDouble("min_order_value");
+                    String storeName = rs.getString("name");
 
                     String subject = "Exclusive Promo Just for You!";
-                    String body = createPromoEmailBody(couponCode, discountAmount, expiryDate);
+                    String body = createPromoEmailBody(couponCode, discountAmount, expiryDate, minOrderValue,
+                            storeName);
 
                     EmailSender.sendEmail(email, subject, body);
+
+                    updateEmailSentFlag(conn, couponCode);
                 }
             }
+        }
+    }
+
+    private static void updateEmailSentFlag(Connection conn, String couponCode) throws SQLException {
+        String updateEmailQuery = "UPDATE Coupons SET email_sent = true WHERE coupon_code = ?";
+        try (PreparedStatement updateEmailStmt = conn.prepareStatement(updateEmailQuery)) {
+            updateEmailStmt.setString(1, couponCode);
+            updateEmailStmt.executeUpdate();
         }
     }
 
@@ -99,12 +113,15 @@ public class EmailPromo {
         }
     }
 
-    private static String createPromoEmailBody(String couponCode, double discountAmount, String expiryDate) {
+    private static String createPromoEmailBody(String couponCode, double discountAmount, String expiryDate,
+            double minOrderValue, String storeName) {
         return "Dear Customer,\n\n" +
-                "We are excited to offer you an exclusive promo code for your next order!\n" +
+                "We are excited to offer you an exclusive promo code for your next order!\n\n" +
                 "Use the coupon code: " + couponCode + "\n" +
                 "Discount: $" + discountAmount + "\n" +
-                "Expires on: " + expiryDate + "\n\n" +
+                "Expires on: " + expiryDate + "\n" +
+                "Minimumm order value: " + minOrderValue + "\n" +
+                "Store: " + storeName + "\n\n" +
                 "Don't miss out on this limited-time offer!\n" +
                 "Best regards,\n" +
                 "Peinalas Team";
