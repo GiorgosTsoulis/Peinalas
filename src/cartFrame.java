@@ -266,11 +266,9 @@ public class cartFrame extends JFrame {
                     String promoCode = getPromoCodeFromUser();
                     if (promoCode != null && !promoCode.isEmpty()) {
 
-                        // Query to check the coupon's validity, including min_order_value, store_id,
-                        // and expiry_date
                         String promoQuery = "SELECT discount_amount, discount_type, min_order_value, store_id, usage_limit "
                                 + "FROM Coupons "
-                                + "WHERE coupon_code = ? AND usage_limit = 1";
+                                + "WHERE coupon_code = ? AND usage_limit = 1 AND expiry_date >= CURDATE() AND email_sent = false";
                         PreparedStatement promoStmt = conn.prepareStatement(promoQuery);
                         promoStmt.setString(1, promoCode);
                         ResultSet promoRs = promoStmt.executeQuery();
