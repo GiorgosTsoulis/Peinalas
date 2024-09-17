@@ -52,7 +52,6 @@ public class DeliveryDashboardFrame extends DashboardFrame {
             }
         });
 
-        // Add buttons with padding
         buttonPanel.add(deliveryStatusButton);
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 15))); // Adds 15px vertical padding between buttons
         buttonPanel.add(logoutButton);
