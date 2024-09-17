@@ -15,8 +15,6 @@ public class SelectRoleFrame extends JFrame {
 
     public SelectRoleFrame(LoginFrame loginFrame) {
         this.setTitle("Select Role");
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -64,6 +62,8 @@ public class SelectRoleFrame extends JFrame {
         });
 
         this.pack();
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setVisible(true);
     }
 }

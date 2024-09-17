@@ -33,8 +33,6 @@ public abstract class RegisterFrame extends JFrame {
 
     public RegisterFrame(LoginFrame loginFrame) {
         this.loginFrame = loginFrame;
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setLayout(new GridBagLayout());
 
         gbc = new GridBagConstraints();
@@ -218,6 +216,8 @@ public abstract class RegisterFrame extends JFrame {
 
         this.setPreferredSize(new Dimension(600, 500));
         this.pack();
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setVisible(true);
     }
 

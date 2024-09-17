@@ -163,9 +163,9 @@ public class LoginFrame extends JFrame {
             case "Staff" ->
                 new StaffDashboardFrame(userId);
             case "Admin" ->
-                new DashboardFrame("Admin");
+                new AdminDashboardFrame(userId);
             case "Delivery" ->
-                new DashboardFrame("Delivery");
+                new DeliveryDashboardFrame(userId);
             default ->
                 null;
         };
