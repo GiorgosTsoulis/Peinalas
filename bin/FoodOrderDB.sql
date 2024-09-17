@@ -53,8 +53,30 @@ CREATE TABLE Delivery (
     user_id INT,
     vehicle VARCHAR(20) NOT NULL,
     license_plate VARCHAR(20) NOT NULL,
+    delivery_status ENUM('Available', 'Not Available') DEFAULT 'Not Available',
     PRIMARY KEY(delivery_id),
     FOREIGN KEY(user_id) REFERENCES Users(user_id)
+);
+
+CREATE TABLE DeliveryPendingRegistrations (
+    pending_id INT AUTO_INCREMENT,
+    username VARCHAR(50),
+    password VARCHAR(255), 
+    role ENUM('Customer', 'Staff', 'Delivery', 'Admin') DEFAULT 'Delivery',
+    firstname VARCHAR(255),
+    lastname VARCHAR(255),
+    address VARCHAR(255),
+    address_number VARCHAR(50),
+    post_code VARCHAR(50),
+    country VARCHAR(50),
+    age INT,
+    phone_number VARCHAR(20),
+    email VARCHAR(255),
+    gender ENUM('Male', 'Female', 'Other'),
+    vehicle VARCHAR(50), 
+    license_plate VARCHAR(50),
+    status ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending',
+    PRIMARY KEY (pending_id)
 );
 
 CREATE TABLE MenuItems (
@@ -149,16 +171,13 @@ INSERT INTO Users(username, password, role, firstname, lastname, address, addres
 ('George', '5690', 'Admin', 'George', 'Smith', '123 Main St', '1A', '12345', 'USA', 30, '1234567890', 'george@example.com', 'Male'),
 ('Savvas', '9780', 'Staff', 'Savvas', 'Johnson', '456 Elm St', '2B', '67890', 'USA', 25, '0987654321', 'savvas@example.com', 'Male'),
 ('Peter', '4560', 'Delivery', 'Peter', 'Brown', '789 Oak St', '3C', '11223', 'USA', 28, '1122334455', 'peter@example.com', 'Male'),
-('Kate', '8020', 'Customer', 'Kate', 'Davis', '321 Pine St', '4D', '44556', 'USA', 22, '6677889900', 'peinalas@example.com', 'Female');
-
+('Kate', '8020', 'Customer', 'Kate', 'Davis', '321 Pine St', '4D', '44556', 'USA', 22, '6677889900', 'kate@example.com', 'Female');
 
 INSERT INTO Staff (user_id, store_id, position) VALUES
 (2, 1, 'Manager');
 
-INSERT INTO Delivery (user_id, vehicle, license_plate) VALUES
-(3, 'Car', 'ABC123');
-
-
+INSERT INTO Delivery (user_id, vehicle, license_plate, delivery_status) VALUES
+(3, 'Car', 'ABC123', 'Not Available');
 
 INSERT INTO MenuItems (store_id, item_name, description, price, item_category) VALUES
 (1, 'Classic Burger', 'A juicy beef burger with lettuce, tomato, and cheese.', 8.99, 'Main Course'),
@@ -253,7 +272,6 @@ VALUES
 ('HALFOFF', 50.00, 'Percentage', '2025-01-15', 100.00, 1, 1),
 ('SPRINGSALE', 15.00, 'Flat', '2025-03-31', 40.00, 1, 1);
 
-
 SELECT * FROM Users;
 SELECT * FROM Stores;
 SELECT * FROM MenuItems;
@@ -262,3 +280,5 @@ SELECT * FROM Delivery;
 SELECT * FROM Orders;
 SELECT * FROM OrderItems;
 SELECT * FROM Coupons;
+SELECT * FROM PromoEmailTracker;
+SELECT * FROM DeliveryPendingRegistrations;

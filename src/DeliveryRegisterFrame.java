@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.regex.Pattern;
 import java.util.Random;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 
@@ -16,17 +17,43 @@ public class DeliveryRegisterFrame extends RegisterFrame {
     public DeliveryRegisterFrame(LoginFrame loginFrame) {
         super(loginFrame);
 
+        // Vehicle Label
+        JLabel vehicleLabel = new JLabel("Vehicle");
+        gbc.gridx = 0;
+        gbc.gridy = 9;
+        this.add(vehicleLabel, gbc);
+
+        // Vehicle ComboBox
+        String[] vehicles = { "Car", "Bike", "Scooter" };
+        vehicleComboBox = new JComboBox<>(vehicles);
+        gbc.gridx = 1;
+        gbc.gridy = 9;
+        this.add(vehicleComboBox, gbc);
+
+        // License Plate Label
+        JLabel licensePlateLabel = new JLabel("License Plate");
+        gbc.gridx = 0;
+        gbc.gridy = 10;
+        this.add(licensePlateLabel, gbc);
+
+        // License Plate TextField
+        licensePlateField = new JTextField();
+        gbc.gridx = 1;
+        gbc.gridy = 10;
+        this.add(licensePlateField, gbc);
+
         // Adjust Register Button position
         gbc.gridx = 1;
-        gbc.gridy = 8;
+        gbc.gridy = 11;
         this.add(registerBtn, gbc);
 
         // Adjust Back Button position
         gbc.gridx = 2;
-        gbc.gridy = 8;
+        gbc.gridy = 11;
         this.add(backBtn, gbc);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void registerUser() {
         String firstname = firstnameField.getText();
@@ -35,7 +62,6 @@ public class DeliveryRegisterFrame extends RegisterFrame {
         String addressNumber = addressNumberField.getText();
         String postCode = postCodeField.getText();
         String country = (String) countryComboBox.getSelectedItem();
-        @SuppressWarnings("deprecation")
         String age = ageDatePicker.getDate() != null ? String.valueOf(ageDatePicker.getDate().getYear() + 1900) : "";
         String gender = (String) genderComboBox.getSelectedItem();
         String number = numberField.getText();
@@ -103,49 +129,32 @@ public class DeliveryRegisterFrame extends RegisterFrame {
                             }
 
                             int ageInt = Integer.parseInt(age);
-                            String query = "INSERT INTO Users (firstname, lastname, address, address_number, post_code, country, age, gender, number, email, username, password, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            String query = "INSERT INTO DeliveryPendingRegistrations (username, password, role, firstname, lastname, address, address_number, post_code, country, age, phone_number, email, gender, vehicle, license_plate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                             try (PreparedStatement pst = conn.prepareStatement(query)) {
-                                pst.setString(1, firstname);
-                                pst.setString(2, lastname);
-                                pst.setString(3, address);
-                                pst.setString(4, addressNumber);
-                                pst.setString(5, postCode);
-                                pst.setString(6, country);
-                                pst.setInt(7, ageInt);
-                                pst.setString(8, gender);
-                                pst.setString(9, number);
-                                pst.setString(10, email);
-                                pst.setString(11, username);
-                                pst.setString(12, password);
-                                pst.setString(13, role); // Set role in the database
+                                pst.setString(1, username);
+                                pst.setString(2, password); // Consider hashing the password here
+                                pst.setString(3, role);
+                                pst.setString(4, firstname);
+                                pst.setString(5, lastname);
+                                pst.setString(6, address);
+                                pst.setString(7, addressNumber);
+                                pst.setString(8, postCode);
+                                pst.setString(9, country);
+                                pst.setInt(10, ageInt);
+                                pst.setString(11, number);
+                                pst.setString(12, email);
+                                pst.setString(13, gender);
+                                pst.setString(14, vehicle);
+                                pst.setString(15, licensePlate);
                                 pst.executeUpdate();
-
-                                // Get the user ID of the newly inserted user
-                                int userId;
-                                try (PreparedStatement getUserIdStmt = conn
-                                        .prepareStatement("SELECT LAST_INSERT_ID()")) {
-                                    try (ResultSet rs = getUserIdStmt.executeQuery()) {
-                                        if (rs.next()) {
-                                            userId = rs.getInt(1);
-                                        } else {
-                                            throw new SQLException("Failed to retrieve user ID.");
-                                        }
-                                    }
-                                }
-
-                                // Insert into Delivery table
-                                String deliveryQuery = "INSERT INTO Delivery (user_id, vehicle, license_plate) VALUES (?, ?, ?)";
-                                try (PreparedStatement deliveryPst = conn.prepareStatement(deliveryQuery)) {
-                                    deliveryPst.setInt(1, userId);
-                                    deliveryPst.setString(2, vehicle);
-                                    deliveryPst.setString(3, licensePlate);
-                                    deliveryPst.executeUpdate();
-                                }
-
-                                JOptionPane.showMessageDialog(null,
-                                        "Registration successful. Please verify your email.");
-                                DeliveryRegisterFrame.this.dispose();
                             }
+
+                            EmailSender.sendEmail(email, "Registration Pending", "Dear " + firstname
+                                    + ",\n\nYour registration is pending approval. You will be notified once approved.");
+
+                            JOptionPane.showMessageDialog(null, "Registration successful. Await approval.");
+                            DeliveryRegisterFrame.this.dispose();
+                            new LoginFrame().setVisible(true); // Open the login frame
                         } catch (SQLException ex) {
                             if (ex instanceof java.sql.SQLNonTransientConnectionException) {
                                 JOptionPane.showMessageDialog(null, "Database connection error.");
@@ -163,6 +172,7 @@ public class DeliveryRegisterFrame extends RegisterFrame {
                     public void onVerificationFailure() {
                         JOptionPane.showMessageDialog(null, "Email verification failed. Registration not completed.");
                     }
+
                 });
     }
 
