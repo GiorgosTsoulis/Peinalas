@@ -3,10 +3,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class DeliveryDashboardFrame extends DashboardFrame {
 
-    private JPanel deliveryDetailsPanel, buttonPanel;
+    private JPanel deliveryDetailsPanel, buttonPanel, pendingDeliveriesPanel, activeDeliveriesPanel;
+    private JTabbedPane deliveriesTabbedPane;
     private JToggleButton deliveryStatusButton;
     private JButton logoutButton;
     private JLabel deliveryStatusLabel;
@@ -19,7 +21,7 @@ public class DeliveryDashboardFrame extends DashboardFrame {
 
         initializeLayout();
 
-        this.setPreferredSize(new Dimension(600, 500));
+        this.setPreferredSize(new Dimension(800, 500));
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -31,14 +33,20 @@ public class DeliveryDashboardFrame extends DashboardFrame {
         deliveryDetailsPanel = new JPanel();
         deliveryDetailsPanel.setLayout(new BoxLayout(deliveryDetailsPanel, BoxLayout.Y_AXIS));
         deliveryDetailsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        add(deliveryDetailsPanel, BorderLayout.CENTER);
+
+        deliveriesTabbedPane = new JTabbedPane();
+        pendingDeliveriesPanel = new JPanel(new BorderLayout());
+        activeDeliveriesPanel = new JPanel(new BorderLayout());
+        deliveriesTabbedPane.addTab("Pending Deliveries", pendingDeliveriesPanel);
+        deliveriesTabbedPane.addTab("Active Deliveries", activeDeliveriesPanel);
+        deliveriesTabbedPane.setVisible(false);
+        add(deliveriesTabbedPane, BorderLayout.EAST);
 
         displayDeliveryDetails();
 
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        add(buttonPanel, BorderLayout.EAST);
 
         deliveryStatusButton = new JToggleButton("Available/Not Available");
         logoutButton = new JButton("Logout");
@@ -53,11 +61,13 @@ public class DeliveryDashboardFrame extends DashboardFrame {
         });
 
         buttonPanel.add(deliveryStatusButton);
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 15))); // Adds 15px vertical padding between buttons
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 15)));
         buttonPanel.add(logoutButton);
 
         deliveryDetailsPanel.add(buttonPanel);
 
+        add(deliveryDetailsPanel, BorderLayout.CENTER);
     }
 
     private void displayDeliveryDetails() {
@@ -88,6 +98,8 @@ public class DeliveryDashboardFrame extends DashboardFrame {
                 deliveryDetailsPanel.add(licensePlateLabel);
                 deliveryDetailsPanel.add(deliveryStatusLabel);
 
+                refreshDeliveryPanelVisibility(result.getString("delivery_status"));
+
             } else {
                 JLabel noDeliveryLabel = new JLabel("No delivery details found.");
                 deliveryDetailsPanel.add(noDeliveryLabel);
@@ -97,6 +109,15 @@ public class DeliveryDashboardFrame extends DashboardFrame {
             deliveryDetailsPanel.repaint();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void refreshDeliveryPanelVisibility(String status) {
+        // Show deliveries tab only if the delivery status is "Available"
+        deliveriesTabbedPane.setVisible("Available".equals(status));
+        if ("Available".equals(status)) {
+            showPendingDeliveries();
+            showActiveDeliveries();
         }
     }
 
@@ -119,6 +140,7 @@ public class DeliveryDashboardFrame extends DashboardFrame {
 
                 JOptionPane.showMessageDialog(this, "Delivery status updated to: " + newStatus);
                 refreshDeliveryLabelStatus(newStatus);
+                refreshDeliveryPanelVisibility(newStatus);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -130,6 +152,96 @@ public class DeliveryDashboardFrame extends DashboardFrame {
             deliveryStatusLabel.setText("Delivery Status: " + newStatus);
             deliveryDetailsPanel.revalidate();
             deliveryDetailsPanel.repaint();
+        }
+    }
+
+    private void showPendingDeliveries() {
+        pendingDeliveriesPanel.removeAll();
+
+        DefaultTableModel tableModel = new DefaultTableModel(
+                new String[] { "Order ID", "Store", "Total Amount", "Delivery Address", "Status" }, 0);
+        JTable table = new JTable(tableModel);
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "SELECT o.order_id, s.name AS store_name, o.total_amount, CONCAT(u.address, ' ', u.address_number) AS delivery_address, o.status "
+                    + "FROM Orders o "
+                    + "JOIN Users u ON o.user_id = u.user_id "
+                    + "JOIN Stores s ON o.store_id = s.store_id "
+                    + "WHERE o.status = 'Completed'";
+
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet result = statement.executeQuery();
+
+            while (result.next()) {
+                int orderId = result.getInt("order_id");
+                String storeName = result.getString("store_name");
+                double totalAmount = result.getDouble("total_amount");
+                String deliveryAddress = result.getString("delivery_address");
+                String deliveryStatus = result.getString("status");
+
+                Object[] data = { orderId, storeName, totalAmount, deliveryAddress, deliveryStatus };
+                tableModel.addRow(data);
+            }
+
+            table.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    int row = table.rowAtPoint(evt.getPoint());
+                    int orderId = (int) tableModel.getValueAt(row, 0);
+                    new PendingDeliveryDetailsFrame(orderId);
+                }
+            });
+
+            pendingDeliveriesPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+            pendingDeliveriesPanel.revalidate();
+            pendingDeliveriesPanel.repaint();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showActiveDeliveries() {
+        activeDeliveriesPanel.removeAll();
+
+        DefaultTableModel tableModel = new DefaultTableModel(
+                new String[] { "Order ID", "Store", "Total Amount", "Delivery Address", "Status" }, 0);
+        JTable table = new JTable(tableModel);
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "SELECT o.order_id, s.name AS store_name, o.total_amount, CONCAT(u.address, ' ', u.address_number) AS delivery_address, o.status "
+                    + "FROM Orders o "
+                    + "JOIN Users u ON o.user_id = u.user_id "
+                    + "JOIN Stores s ON o.store_id = s.store_id "
+                    + "WHERE o.status = 'On the road'";
+
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet result = statement.executeQuery();
+
+            while (result.next()) {
+                int orderId = result.getInt("order_id");
+                String storeName = result.getString("store_name");
+                double totalAmount = result.getDouble("total_amount");
+                String deliveryAddress = result.getString("delivery_address");
+                String deliveryStatus = result.getString("status");
+
+                Object[] data = { orderId, storeName, totalAmount, deliveryAddress, deliveryStatus };
+                tableModel.addRow(data);
+            }
+
+            table.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    int row = table.rowAtPoint(evt.getPoint());
+                    int orderId = (int) tableModel.getValueAt(row, 0);
+                    new ActiveDeliveryDetailsFrame(orderId);
+                }
+            });
+
+            activeDeliveriesPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+            activeDeliveriesPanel.revalidate();
+            activeDeliveriesPanel.repaint();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

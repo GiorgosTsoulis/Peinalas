@@ -96,7 +96,7 @@ CREATE TABLE Orders (
     user_id INT, -- ID of the customer who placed the order
     store_id INT, -- ID of the store where the order was placed
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP, -- When the order was placed
-    status ENUM('Pending', 'In Progress', 'Cancelled', 'Completed') DEFAULT 'Pending', -- Current status of the order
+    status ENUM('Pending', 'In Progress', 'Cancelled', 'Completed', 'On the road','Delivered') DEFAULT 'Pending', -- Current status of the order
     total_amount DECIMAL(10, 2), -- Total amount of the order
     service_type ENUM('Takeaway', 'Dine-in') NOT NULL, -- Whether the order is for takeaway or dine-in
     timer_start DATETIME,
