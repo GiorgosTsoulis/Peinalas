@@ -42,6 +42,8 @@ public class DeliveryDashboardFrame extends DashboardFrame {
         deliveriesTabbedPane.setVisible(false);
         add(deliveriesTabbedPane, BorderLayout.EAST);
 
+        initializeStatus("Not Available");
+
         displayDeliveryDetails();
 
         buttonPanel = new JPanel();
@@ -68,6 +70,21 @@ public class DeliveryDashboardFrame extends DashboardFrame {
         deliveryDetailsPanel.add(buttonPanel);
 
         add(deliveryDetailsPanel, BorderLayout.CENTER);
+    }
+
+    private void initializeStatus(String status) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "UPDATE Delivery SET delivery_status = ? WHERE user_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, status);
+            pstmt.setInt(2, userId);
+            pstmt.executeUpdate();
+
+            refreshDeliveryLabelStatus(status);
+            refreshDeliveryPanelVisibility(status);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void displayDeliveryDetails() {
@@ -138,7 +155,6 @@ public class DeliveryDashboardFrame extends DashboardFrame {
                 updateStatement.setInt(2, userId);
                 updateStatement.executeUpdate();
 
-                JOptionPane.showMessageDialog(this, "Delivery status updated to: " + newStatus);
                 refreshDeliveryLabelStatus(newStatus);
                 refreshDeliveryPanelVisibility(newStatus);
             }

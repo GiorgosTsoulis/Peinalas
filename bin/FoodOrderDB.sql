@@ -97,8 +97,8 @@ CREATE TABLE Orders (
     store_id INT, -- ID of the store where the order was placed
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP, -- When the order was placed
     status ENUM('Pending', 'In Progress', 'Cancelled', 'Completed', 'On the road','Delivered') DEFAULT 'Pending', -- Current status of the order
-    total_amount DECIMAL(10, 2), -- Total amount of the order
-    service_type ENUM('Takeaway', 'Dine-in') NOT NULL, -- Whether the order is for takeaway or dine-in
+    total_amount DECIMAL(10, 2), 
+    service_type ENUM('Takeaway', 'Dine-in', 'Delivery') NOT NULL, -- Whether the order is for takeaway or dine-in
     timer_start DATETIME,
     timer_end DATETIME,
     PRIMARY KEY(order_id),
@@ -243,26 +243,21 @@ INSERT INTO MenuItems (store_id, item_name, description, price, item_category) V
 
 
 INSERT INTO Orders (user_id, store_id, total_amount, status, service_type, timer_start, timer_end) VALUES
-(1, 1, 17.97, 'Completed', 'Takeaway', NULL, NULL),
-(1, 4, 13.47, 'Completed', 'Takeaway', NULL, NULL),
-(1, 3, 15.97, 'Completed', 'Takeaway', CURRENT_TIMESTAMP, NULL),
-(1, 2, 27.97, 'Completed', 'Dine-in', '2024-09-01 12:00:00', '2024-09-01 12:30:00'),
-(1, 6, 35.97, 'Completed', 'Dine-in', '2024-09-02 15:00:00', '2024-09-02 15:45:00'),
-(1, 8, 33.97, 'Completed', 'Dine-in', '2024-09-03 17:30:00', '2024-09-03 18:00:00'),
-(4, 2, 29.97, 'Completed', 'Dine-in', '2024-09-04 13:15:00', '2024-09-04 13:50:00'),
-(4, 2, 22.47, 'Cancelled', 'Takeaway', '2024-09-05 10:30:00', '2024-09-05 10:50:00');
-
-
+(1, 1, 22.96, 'Completed', 'Takeaway', NULL, NULL), 
+(1, 4, 21.97, 'Completed', 'Takeaway', NULL, NULL),  
+(1, 3, 33.97, 'Completed', 'Takeaway', CURRENT_TIMESTAMP, NULL),
+(4, 2, 22.47, 'Cancelled', 'Takeaway', '2024-09-05 10:30:00', '2024-09-05 10:50:00'); 
 
 INSERT INTO OrderItems (order_id, item_id, user_id, quantity, price) VALUES
 (1, 1, 4, 1, 8.99),
 (1, 2, 4, 2, 4.99),
 (1, 3, 4, 1, 3.99),
-(2, 7, 4, 2, 6.99),
+(2, 7, 4, 2, 6.99),   
 (2, 8, 4, 1, 7.99),
-(3, 22, 4, 1, 12.99),
+(3, 22, 4, 1, 12.99),  
 (3, 23, 4, 1, 13.99),
 (3, 24, 4, 1, 6.99);
+
 
 INSERT INTO Coupons (coupon_code, discount_amount, discount_type, expiry_date, min_order_value, store_id, usage_limit) 
 VALUES 
