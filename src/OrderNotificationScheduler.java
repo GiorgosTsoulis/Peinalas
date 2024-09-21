@@ -59,6 +59,21 @@ public class OrderNotificationScheduler {
                         "Your order #" + orderId
                         + " is awaiting confirmation. You’ll receive a notification once it has been confirmed." +
                         emailFooter;
+            case "Ready for delivery":
+                return emailHeader +
+                        "Your order #" + orderId
+                        + " is ready for delivery. Our delivery team will be on their way shortly." +
+                        emailFooter;
+            case "On the road":
+                return emailHeader +
+                        "Your order #" + orderId
+                        + " is on the way to your location. Please ensure you are available to receive it." +
+                        emailFooter;
+            case "Delivered":
+                return emailHeader +
+                        "Your order #" + orderId
+                        + " has been successfully delivered. We hope you enjoy your meal!" +
+                        emailFooter;
             default:
                 return emailHeader +
                         "We have an important update regarding your order #" + orderId + ".\n" +
