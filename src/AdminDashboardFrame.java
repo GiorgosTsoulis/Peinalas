@@ -7,6 +7,7 @@ public class AdminDashboardFrame extends DashboardFrame {
     private JLabel headingLabel;
     private JButton acceptDeliveryButton, logoutButton;
 
+    @SuppressWarnings("unused")
     private int userId;
 
     public AdminDashboardFrame(int userId) {

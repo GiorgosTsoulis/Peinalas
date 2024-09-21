@@ -15,6 +15,7 @@ public class cartFrame extends JFrame {
     private int orderId;
     private JPanel itemsPanel;
     private JLabel totalAmountLabel;
+    private JComboBox<String> serviceTypeCB;
     private int userId;
     private storeFrame storeFrame;
 
@@ -47,6 +48,9 @@ public class cartFrame extends JFrame {
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new FlowLayout());
 
+        String serviceType[] = { "Takeaway", "Dine-in", "Delivery" };
+        serviceTypeCB = new JComboBox<>(serviceType);
+
         JButton confirmButton = new JButton("Confirm Order");
         JButton discardButton = new JButton("Discard Items");
         JButton continueButton = new JButton("Continue Shopping");
@@ -72,6 +76,7 @@ public class cartFrame extends JFrame {
             }
         });
 
+        buttonsPanel.add(serviceTypeCB);
         buttonsPanel.add(confirmButton);
         buttonsPanel.add(discardButton);
         buttonsPanel.add(continueButton);
@@ -251,13 +256,14 @@ public class cartFrame extends JFrame {
 
             if (rs.next()) {
                 int lastOrderId = rs.getInt("order_id");
+                String serviceType = (String) serviceTypeCB.getSelectedItem();
 
-                String updateOrderQuery = "UPDATE Orders SET user_id = (SELECT user_id FROM Orders WHERE order_id = ?), store_id = (SELECT store_id FROM Orders WHERE order_id = ?), order_date = NOW(), status = 'Pending', total_amount = (SELECT SUM(price) FROM OrderItems WHERE order_id = ?), service_type = (SELECT service_type FROM Orders WHERE order_id = ?), timer_start = NOW() WHERE order_id = ?";
+                String updateOrderQuery = "UPDATE Orders SET user_id = (SELECT user_id FROM Orders WHERE order_id = ?), store_id = (SELECT store_id FROM Orders WHERE order_id = ?), order_date = NOW(), status = 'Pending', total_amount = (SELECT SUM(price) FROM OrderItems WHERE order_id = ?), service_type = ?, timer_start = NOW() WHERE order_id = ?";
                 PreparedStatement updateOrderStmt = conn.prepareStatement(updateOrderQuery);
                 updateOrderStmt.setInt(1, orderId);
                 updateOrderStmt.setInt(2, orderId);
                 updateOrderStmt.setInt(3, orderId);
-                updateOrderStmt.setInt(4, orderId);
+                updateOrderStmt.setString(4, serviceType);
                 updateOrderStmt.setInt(5, lastOrderId);
 
                 int rowsAffected = updateOrderStmt.executeUpdate();

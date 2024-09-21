@@ -99,25 +99,51 @@ public class OrderDetails extends JFrame {
     }
 
     private void completeOrder(int orderId) {
-        String query = "UPDATE Orders SET status = 'Completed' WHERE order_id = ?";
+        String query = "SELECT service_type FROM Orders WHERE order_id = ?";
+
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setInt(1, orderId);
-            pstmt.executeUpdate();
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String serviceType = rs.getString("service_type");
 
-            OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
+                    String updateQuery;
+                    if ("Delivery".equals(serviceType)) {
+                        updateQuery = "UPDATE Orders SET status = 'Ready for delivery' WHERE order_id = ?";
+                    } else if ("Takeaway".equals(serviceType) || "Dine-in".equals(serviceType)) {
+                        updateQuery = "UPDATE Orders SET status = 'Completed' WHERE order_id = ?";
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Unknown service type: " + serviceType);
+                        return;
+                    }
 
-            JOptionPane.showMessageDialog(this, "Order completed successfully.");
-            this.dispose(); // Close the window
+                    try (PreparedStatement updatePstmt = conn.prepareStatement(updateQuery)) {
+                        updatePstmt.setInt(1, orderId);
+                        int rowsAffected = updatePstmt.executeUpdate();
 
-            if (orderManager != null) {
-                orderManager.refreshTables();
+                        if (rowsAffected > 0) {
+                            OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
+                            JOptionPane.showMessageDialog(this, "Order updated successfully.");
+                            this.dispose(); // Close the window
+
+                            if (orderManager != null) {
+                                orderManager.refreshTables(); // Refresh the tables in OrderManager
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Order not found or cannot be updated.");
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Order not found.");
+                }
             }
 
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error completing the order.");
+            JOptionPane.showMessageDialog(this, "Error updating the order.");
             ex.printStackTrace();
         }
     }
+
 }

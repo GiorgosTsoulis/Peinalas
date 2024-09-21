@@ -187,7 +187,7 @@ public class DeliveryDashboardFrame extends DashboardFrame {
                     + "FROM Orders o "
                     + "JOIN Users u ON o.user_id = u.user_id "
                     + "JOIN Stores s ON o.store_id = s.store_id "
-                    + "WHERE o.status = 'Completed'";
+                    + "WHERE o.status = 'Ready for delivery'";
 
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet result = statement.executeQuery();
