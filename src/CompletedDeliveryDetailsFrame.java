@@ -3,14 +3,15 @@ import java.sql.*;
 import java.awt.*;
 import javax.swing.*;
 
-public class PendingDeliveryDetailsFrame extends JFrame {
+public class CompletedDeliveryDetailsFrame extends JFrame {
 
     private JPanel orderDetailsPanel, customerDetailsPanel;
     @SuppressWarnings("unused")
     private int orderId;
+    @SuppressWarnings("unused")
     private DeliveryDashboardFrame deliveryDashboardFrame;
 
-    public PendingDeliveryDetailsFrame(int orderId, DeliveryDashboardFrame deliveryDashboardFrame) {
+    public CompletedDeliveryDetailsFrame(int orderId, DeliveryDashboardFrame deliveryDashboardFrame) {
         this.orderId = orderId;
         this.deliveryDashboardFrame = deliveryDashboardFrame;
         this.setTitle("Pending Delivery Details - Order ID: " + orderId);
@@ -50,12 +51,6 @@ public class PendingDeliveryDetailsFrame extends JFrame {
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        // Accept Button
-        JButton acceptButton = new JButton("Accept");
-        acceptButton.addActionListener(e -> acceptOrder(orderId));
-        acceptButton.setPreferredSize(new Dimension(100, 25));
-        buttonsPanel.add(acceptButton);
-
         // Back Button
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> this.dispose());
@@ -71,29 +66,6 @@ public class PendingDeliveryDetailsFrame extends JFrame {
         this.setSize(600, 400);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
-    }
-
-    private void acceptOrder(int orderId) {
-        String query = "UPDATE Orders SET status = 'On the road' WHERE order_id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setInt(1, orderId);
-            pstmt.executeUpdate();
-
-            OrderNotificationScheduler.checkOrdersAndSendNotifications(orderId);
-
-            JOptionPane.showMessageDialog(this, "Order accepted successfully.");
-            this.dispose();
-
-            if (deliveryDashboardFrame != null) {
-                deliveryDashboardFrame.refreshDeliveriesTables();
-            }
-
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error accepting the order.");
-            ex.printStackTrace();
-        }
     }
 
     private void loadOrderItems(int orderId, DefaultTableModel tableModel) {

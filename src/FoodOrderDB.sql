@@ -96,7 +96,7 @@ CREATE TABLE Orders (
     user_id INT, -- ID of the customer who placed the order
     store_id INT, -- ID of the store where the order was placed
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP, -- When the order was placed
-    status ENUM('Pending', 'In Progress', 'Cancelled', 'Completed', 'On the road','Delivered') DEFAULT 'Pending', -- Current status of the order
+    status ENUM('Pending', 'In Progress', 'Cancelled', 'Completed', 'Ready for delivery', 'On the road','Delivered') DEFAULT 'Pending', -- Current status of the order
     total_amount DECIMAL(10, 2), 
     service_type ENUM('Takeaway', 'Dine-in', 'Delivery') NOT NULL, -- Whether the order is for takeaway or dine-in
     timer_start DATETIME,
@@ -266,14 +266,3 @@ VALUES
 ('FREESHIP', 3.00, 'Flat', '2024-10-31', 0.00, 1, 1),
 ('HALFOFF', 50.00, 'Percentage', '2025-01-15', 100.00, 1, 1),
 ('SPRINGSALE', 15.00, 'Flat', '2025-03-31', 40.00, 1, 1);
-
-SELECT * FROM Users;
-SELECT * FROM Stores;
-SELECT * FROM MenuItems;
-SELECT * FROM Staff;
-SELECT * FROM Delivery;
-SELECT * FROM Orders;
-SELECT * FROM OrderItems;
-SELECT * FROM Coupons;
-SELECT * FROM PromoEmailTracker;
-SELECT * FROM DeliveryPendingRegistrations;
