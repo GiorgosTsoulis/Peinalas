@@ -47,7 +47,7 @@ public class OrderNotificationScheduler {
             case "Completed":
                 return emailHeader +
                         "Your order #" + orderId
-                        + " is now complete and ready for pickup or delivery. We hope you enjoy your meal!" +
+                        + " is now complete and ready for pickup. We hope you enjoy your meal!" +
                         emailFooter;
             case "Cancelled":
                 return emailHeader +
