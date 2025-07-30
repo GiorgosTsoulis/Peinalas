@@ -25,6 +25,18 @@ The Peinalas application includes the following features:
 - Development Environment: VS Code
 - Database Management: MySQL Workbench
 
+## Showcase
+### User Interface
+- The UI is built using Java Swing, featuring intuitive forms and panels for user interactions, such as registration, searching for restaurants, and managing orders.
+
+### Database Management
+- MySQL handles data storage for users, orders, restaurants, and more. The project demonstrates how to perform CRUD operations efficiently within a Java application.
+
+### Core Functionalities
+- Restaurant Search: Search functionality is enhanced with filters like location and cuisine.
+- Order Process: Users can add items to their cart, place orders, and track them in real-time.
+- Admin Features: Restaurant admins have access to menu management, promotions, and order processing.
+
 ## Installation and Setup
 ### Prerequisites
 - Java Development Kit (JDK) (version 11 or higher)
@@ -53,15 +65,3 @@ git clone https://github.com/yourusername/Peinalas.git
 5. Run the Application:
 - In your IDE, compile and run the project.
 - The main window of the Foody application should appear, allowing you to explore its features.
-
-## Showcase
-### User Interface
-- The UI is built using Java Swing, featuring intuitive forms and panels for user interactions, such as registration, searching for restaurants, and managing orders.
-
-### Database Management
-- MySQL handles data storage for users, orders, restaurants, and more. The project demonstrates how to perform CRUD operations efficiently within a Java application.
-
-### Core Functionalities
-- Restaurant Search: Search functionality is enhanced with filters like location and cuisine.
-- Order Process: Users can add items to their cart, place orders, and track them in real-time.
-- Admin Features: Restaurant admins have access to menu management, promotions, and order processing.
