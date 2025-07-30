@@ -37,7 +37,7 @@ The Peinalas application includes the following features:
 
 ## 🎥 Demo / 🖼️ Screenshot
 
-##⚙️ Installation and Setup
+## ⚙️ Installation and Setup
 ### Prerequisites
 - Java Development Kit (JDK) (version 11 or higher)
 - MySQL Server
