@@ -1,43 +1,43 @@
 # Peinalas
 
-## Overview
+## 🚀 Intro
 Peinalas is a university project developed using Java Swing for the front-end and MySQL for the back-end. It simulates an online food delivery system, providing core functionalities like restaurant search, order management, real-time order tracking, and user account management.
 
 This project serves as an example of applying object-oriented programming principles, user interface design with Java Swing, and database management using MySQL.
 
-## Features
+## ✨ Features
 The Peinalas application includes the following features:
 
-- User Registration: Allows users to create accounts, with email verification to ensure security.
-- Restaurant Search: Users can search for restaurants based on their location and apply filters for a more refined search.
-- Order Management: Facilitates the addition of menu items to a cart, submission of orders, and processing of payments.
-- Order History: Users can view and manage their past orders.
-- Account Management: Enables users to update their personal information and change their passwords.
-- Real-time Order Tracking: Users can track the status of their orders as they progress from preparation to delivery.
-- Menu Management: Restaurant admins can add and manage menu items.
-- Promotions: Admins can create and apply promotional offers.
-- Report Generation: Generate sales and order reports, which can be exported for analysis.
-- Delivery Management: Features for delivery personnel to manage and track deliveries.
+-👤 User Registration: Allows users to create accounts, with email verification to ensure security.
+-🏪 Restaurant Search: Users can search for restaurants based on their location and apply filters for a more refined search.
+-🛒 Order Management: Facilitates the addition of menu items to a cart, submission of orders, and processing of payments.
+-📊 Order History: Users can view and manage their past orders.
+-📝 Account Management: Enables users to update their personal information and change their passwords.
+-📦 Real-time Order Tracking: Users can track the status of their orders as they progress from preparation to delivery.
+-🧑‍🍳 Menu Management: Restaurant admins can add and manage menu items.
+-💸 Promotions: Admins can create and apply promotional offers.
+-📊 Report Generation: Generate sales and order reports, which can be exported for analysis.
+-🚚Delivery Management: Features for delivery personnel to manage and track deliveries.
 
-## Technology Stack
-- Front-end: Java Swing
-- Back-end: Java Swing, MySQL
-- Development Environment: VS Code
-- Database Management: MySQL Workbench
+## 🛠️ Tech Stack
+- ☕ Java (Swing GUI)
+- 🗄️ MySQL (Database)
+- 📦 JDBC (Database Connectivity)
+- 📧 JavaMail (Email Verification & Promotions)
+- 🖥️ VS Code (Development)
+- 🗃️ External Libraries: `mysql-connector-j`, `javax.mail`, `activation`, `swingx`
 
-## Showcase
-### User Interface
-- The UI is built using Java Swing, featuring intuitive forms and panels for user interactions, such as registration, searching for restaurants, and managing orders.
+## 📚 Learnings
+- 🏗️ Object-Oriented Design (OOP) & MVC patterns
+- 🖱️ Event-driven programming with ActionListeners and Timers
+- 🔗 Database CRUD operations via JDBC
+- 📨 Integrating JavaMail for real-world email workflows
+- 🧩 Modular GUI design with reusable Swing components
+- 🛡️ User authentication and data validation
 
-### Database Management
-- MySQL handles data storage for users, orders, restaurants, and more. The project demonstrates how to perform CRUD operations efficiently within a Java application.
+## 🎥 Demo / 🖼️ Screenshot
 
-### Core Functionalities
-- Restaurant Search: Search functionality is enhanced with filters like location and cuisine.
-- Order Process: Users can add items to their cart, place orders, and track them in real-time.
-- Admin Features: Restaurant admins have access to menu management, promotions, and order processing.
-
-## Installation and Setup
+##⚙️ Installation and Setup
 ### Prerequisites
 - Java Development Kit (JDK) (version 11 or higher)
 - MySQL Server
