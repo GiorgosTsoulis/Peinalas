@@ -37,29 +37,36 @@ The Peinalas application includes the following features:
 
 ## 🎥 Demo / 🖼️ Screenshot
 - User Login/Logout
+  <br>
   ![login-logout](https://github.com/user-attachments/assets/be070313-9307-4c98-87e2-3e559f47719e)
   <br><br>
   
 - Restaurant Search
+  <br>
   ![restaurant-search](https://github.com/user-attachments/assets/de0cf359-7a83-4dd0-93c7-46307c9fdc9a)
   <br><br>
 
 - Order
+  <br>
   ![order](https://github.com/user-attachments/assets/3664bc78-e93c-4415-9233-95960f06e114)
   <br><br>
 
 - Profile Edit
+  <br>
   ![profile-edit](https://github.com/user-attachments/assets/e8afc521-91d8-401d-9253-9ffd580ca85e)
   <br><br>
 
 - Staff confirms order
+  <br>
   ![confirm-order](https://github.com/user-attachments/assets/71aa4745-d77a-40cc-aa0d-159962f14a82)
 
 - Coupon Generation
+  <br>
   ![coupon-generation](https://github.com/user-attachments/assets/21cef114-57df-4b25-bd95-18a5b92cd9d7)
   <br><br>
 
 - Delivery Staff Availabilty
+  <br>
   ![delivery](https://github.com/user-attachments/assets/72ba2473-70a8-4f2d-869f-133132fcb300)
   <br><br>
 
