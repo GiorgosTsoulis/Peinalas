@@ -8,16 +8,16 @@ This project serves as an example of applying object-oriented programming princi
 ## ✨ Features
 The Peinalas application includes the following features:
 
--👤 User Registration: Allows users to create accounts, with email verification to ensure security.
--🏪 Restaurant Search: Users can search for restaurants based on their location and apply filters for a more refined search.
--🛒 Order Management: Facilitates the addition of menu items to a cart, submission of orders, and processing of payments.
--📊 Order History: Users can view and manage their past orders.
--📝 Account Management: Enables users to update their personal information and change their passwords.
--📦 Real-time Order Tracking: Users can track the status of their orders as they progress from preparation to delivery.
--🧑‍🍳 Menu Management: Restaurant admins can add and manage menu items.
--💸 Promotions: Admins can create and apply promotional offers.
--📊 Report Generation: Generate sales and order reports, which can be exported for analysis.
--🚚Delivery Management: Features for delivery personnel to manage and track deliveries.
+- 👤 User Registration: Allows users to create accounts, with email verification to ensure security.
+- 🏪 Restaurant Search: Users can search for restaurants based on their location and apply filters for a more refined search.
+- 🛒 Order Management: Facilitates the addition of menu items to a cart, submission of orders, and processing of payments.
+- 📊 Order History: Users can view and manage their past orders.
+- 📝 Account Management: Enables users to update their personal information and change their passwords.
+- 📦 Real-time Order Tracking: Users can track the status of their orders as they progress from preparation to delivery.
+- 🧑‍🍳 Menu Management: Restaurant admins can add and manage menu items.
+- 💸 Promotions: Admins can create and apply promotional offers.
+- 📊 Report Generation: Generate sales and order reports, which can be exported for analysis.
+- 🚚Delivery Management: Features for delivery personnel to manage and track deliveries.
 
 ## 🛠️ Tech Stack
 - ☕ Java (Swing GUI)
